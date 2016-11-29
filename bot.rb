@@ -32,7 +32,7 @@ client.on :channel_joined do |data|
   end
 end
 
-webclient.chat_postMessage(channel: '#general', text: '<http://test.com|this is a test>', as_user: true)
+webclient.chat_postMessage(channel: '#general', text: "I'm ready to get to work folks !", as_user: true)
 
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|

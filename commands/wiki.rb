@@ -21,7 +21,7 @@ require 'logging'
         client.say(channel: data.channel, text: "Your wiki is created http://MediaWiki-URL?curid=#{pageid}")
       end
 =end
-      def search (webclient client, channel, searchQuery)
+      def search (webclient, client, channel, searchQuery)
         #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
         
