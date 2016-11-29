@@ -64,8 +64,8 @@ client.on :message do |data|
     logger.debug("Unknown command")
   end
 
-  user = client.users_info(user: data['user'])
-  rebecca_user = client.users_info(user: "@rebecca.fribourg")
+  user = client.web_client.users_info(user: data['user'])
+  rebecca_user = client.web_client.users_info(user: "@rebecca.fribourg")
   logger.debug(user)
   if rebecca_user == user then
     client.typing channel: data['channel']
