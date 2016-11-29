@@ -64,7 +64,7 @@ client.on :message do |data|
     logger.debug("Unknown command")
   end
 
-  logger.debug("#{data['user']}")
+  logger.debug("<@#{data['user']}>")
   if "#{data['user']}" == "rebecca.fribourg" then
     client.typing channel: data['channel']
     client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
@@ -74,6 +74,7 @@ client.on :message do |data|
   case values[0]
   when 'wiki' then
     logger.debug("Should search for : #{values[1]}")
+    wiki.search(client,values[1])
   end
 
 end

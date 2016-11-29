@@ -21,5 +21,10 @@ require 'logging'
         client.say(channel: data.channel, text: "Your wiki is created http://MediaWiki-URL?curid=#{pageid}")
       end
 =end
+      def search (client, search)
+        logger.debug("Searching for #{search}")
+        response = wiki_connection.action :opensearch, search:search
+        logger.debug("res is #{response}")
+      end
     end
   end
