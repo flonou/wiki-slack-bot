@@ -63,7 +63,15 @@ client.on :message do |data|
     client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
     logger.debug("Unknown command")
   end
+
+  logger.debug(data['user'])
+  if data['user'] == "rebecca.fribourg" then
+    client.typing channel: data['channel']
+    client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
+  end
+
 end
+
 
 def direct_message?(data)
   # direct message channles start with a 'D'
