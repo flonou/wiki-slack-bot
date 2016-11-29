@@ -37,7 +37,7 @@ webclient.chat_postMessage(channel: '#general', text: "I'm ready to get to work 
 users = client.web_client.users_list
 users.each do |entry|
   if entry[0] == "members" then
-    entry.each do |user|
+    entry[1].each do |user|
       logger.debug(user)
     end
     end
