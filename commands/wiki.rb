@@ -34,7 +34,7 @@ require 'logging'
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
           @@logger.debug("res2 is #{response2.data}")
           @@logger.debug("res2 is #{response2.data[0]}")
-          @@logger.debug("res2 is #{response2.data[0][2]}")
+          @@logger.debug("res2 is #{response2.data[1][2]}")
           answer = answer + response2.data[0][2] + "\n" + entry['snippet']
         end
         client.message channel: channel, text: "#{answer}"
