@@ -63,7 +63,8 @@ client.on :message do |data|
     client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
     logger.debug("Unknown command")
   end
-
+  
+  logger.debug(data['user'])
   user = client.web_client.users_info(user: data['user'])
   rebecca_user = client.web_client.users_info(user: "@rebecca.fribourg")
   logger.debug(user)
