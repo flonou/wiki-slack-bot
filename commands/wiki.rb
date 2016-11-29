@@ -22,18 +22,18 @@ require 'logging'
       end
 =end
       def search (client, channel, searchQuery)
-        @@logger.debug("Searching for #{searchQuery}")
+        #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
         
-        @@logger.debug("res is #{response.data}")
-        @@logger.debug("res is #{response.data['search']}")
+        #@@logger.debug("res is #{response.data}")
+        #@@logger.debug("res is #{response.data['search']}")
         answer = "Results to " + searchQuery + " are : \n"
         response.data['search'].each do |entry|
            
-          @@logger.debug("link : #{entry['title']}")
+          #@@logger.debug("link : #{entry['title']}")
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
-          @@logger.debug("res2 is #{response2.data}")
-          answer = answer + "<"+response2.data[3][0]+"|"+entry['title'] + "\n" #+ entry['snippet']
+          #@@logger.debug("res2 is #{response2.data}")
+          answer = answer + "<"+response2.data[3][0]+"|"+entry['title'] + ">\n" #+ entry['snippet']
         end
         client.message channel: channel, text: "#{answer}"
       end
