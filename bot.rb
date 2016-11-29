@@ -33,9 +33,14 @@ client.on :channel_joined do |data|
 end
 
 webclient.chat_postMessage(channel: '#general', text: "I'm ready to get to work folks !", as_user: true)
+
 users = client.web_client.users_list
-users.each do |user|
-  logger.debug(user)
+users.each do |entry|
+  if entry[0] == "members" then
+    entry.each do |user|
+      logger.debug(user)
+    end
+    end
 end
 
 # listen for message event - https://api.slack.com/events/message
