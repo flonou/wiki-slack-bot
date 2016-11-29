@@ -2,7 +2,6 @@ require 'slack-ruby-client'
 require 'logging'
 require_relative 'commands/wiki'
 
-wiki = Commands::Wiki.new
 logger = Logging.logger(STDOUT)
 logger.level = :debug
 
@@ -15,6 +14,7 @@ Slack.configure do |config|
 end
 
 client = Slack::RealTime::Client.new
+wiki = Commands::Wiki.new
 
 # listen for hello (connection) event - https://api.slack.com/events/hello
 client.on :hello do
