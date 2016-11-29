@@ -5,7 +5,7 @@ require 'logging'
       logger = Logging.logger(STDOUT)
       logger.level = :debug
       wiki_connection = MediawikiApi::Client.new ENV['API_URL']
-      logger.debug("I will try to connect to the wiki as ENV['USERNAME']!")
+      logger.debug("I will try to connect to the wiki as #{ENV['USERNAME']}!")
       wiki_connection.log_in ENV['USERNAME'], ENV['PASSWORD']
       if wiki_connection.logged_in then
         logger.debug("Connected successfuly")
