@@ -4,10 +4,10 @@ require 'logging'
     class Wiki
       @@logger = Logging.logger(STDOUT)
       @@logger.level = :debug
-      wiki_connection = MediawikiApi::Client.new ENV['API_URL']
+      @@wiki_connection = MediawikiApi::Client.new ENV['API_URL']
       @@logger.debug("I will try to connect to the wiki as #{ENV['USERNAME']}!")
-      wiki_connection.log_in ENV['USERNAME'], ENV['PASSWORD']
-      if wiki_connection.logged_in then
+      @@wiki_connection.log_in ENV['USERNAME'], ENV['PASSWORD']
+      if @@wiki_connection.logged_in then
         @@logger.debug("Connected successfuly")
       else
         @@logger.debug("Could not connect :(")
@@ -23,7 +23,7 @@ require 'logging'
 =end
       def search (client, search)
         @@logger.debug("Searching for #{search}")
-        response = wiki_connection.action :opensearch, search:search
+        response = @@wiki_connection.action :opensearch, search:search
         @@logger.debug("res is #{response}")
       end
     end
