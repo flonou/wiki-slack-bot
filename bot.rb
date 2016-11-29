@@ -13,6 +13,8 @@ Slack.configure do |config|
   end
 end
 
+webclient = Slack::Web::Client.new
+client.chat_postMessage(channel: '#general', text: '<http://test.com|this is a test>', as_user: true)
 client = Slack::RealTime::Client.new
 wiki = Commands::Wiki.new
 
