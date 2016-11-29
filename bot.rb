@@ -14,7 +14,6 @@ Slack.configure do |config|
 end
 
 webclient = Slack::Web::Client.new
-client.chat_postMessage(channel: '#general', text: '<http://test.com|this is a test>', as_user: true)
 client = Slack::RealTime::Client.new
 wiki = Commands::Wiki.new
 
@@ -32,6 +31,8 @@ client.on :channel_joined do |data|
     logger.debug("Someone far less important than #{client.self['name']} joined #{data['channel']['id']}")
   end
 end
+
+webclient.chat_postMessage(channel: '#general', text: '<http://test.com|this is a test>', as_user: true)
 
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
