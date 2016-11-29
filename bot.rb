@@ -65,12 +65,12 @@ client.on :message do |data|
   end
   
   logger.debug(data['user'])
-  rebecca_user = client.web_client.users_info(user: "@rebecca.fribourg")
-  logger.debug(rebecca_user)
-  if rebecca_user == data['user'] then
-    client.typing channel: data['channel']
-    client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
-  end
+  #rebecca_user = client.web_client.users_info(user: "@rebecca.fribourg")
+  #logger.debug(rebecca_user)
+  #if rebecca_user == data['user'] then
+#    client.typing channel: data['channel']
+#    client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
+#  end
 
   values = data['text'].split(" ",2)
   case values[0]
