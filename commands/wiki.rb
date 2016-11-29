@@ -1,9 +1,13 @@
 require 'mediawiki_api'
   module Commands
     class Wiki
-      @@wiki_connection = MediawikiApi::Client.new "https://wiki.inria.fr/hybrid/api.php"
-      def connect(username,password)
-        wiki_connection.log_in username, password
+      @@wiki_connection = MediawikiApi::Client.new ENV['API_URL']
+      client.message channel: data['channel'], text: "I will try to connect to the wiki !"
+      wiki_connection.log_in ENV['USERNAME'], ENV['PASSWORD']
+      if wiki_connection.logged_in then
+          client.message channel: data['channel'], text: "Connected successfuly"
+      else
+          client.message channel: data['channel'], text: "Could not connect :("
       end
 =begin
       wiki_connection = MediawikiApi::Client.new "https://wiki.inria.fr/hybrid/api.php"
