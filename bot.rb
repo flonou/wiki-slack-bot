@@ -80,7 +80,7 @@ client.on :message do |data|
   case values[0]
   when 'wiki' then
     logger.debug("Should search for : #{values[1]}")
-    wiki.search client, data['channel'], values[1]
+    wiki.search webclient, client, data['channel'], values[1]
   end
 
 end
