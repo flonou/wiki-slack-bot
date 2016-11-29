@@ -64,8 +64,10 @@ client.on :message do |data|
     logger.debug("Unknown command")
   end
 
-  logger.debug("<@#{data['user']}>")
-  if "#{data['user']}" == "rebecca.fribourg" then
+  user = client.users_info(user: data['user'])
+  rebecca_user = client.users_info(user: "@rebecca.fribourg")
+  logger.debug(user)
+  if rebecca_user == user then
     client.typing channel: data['channel']
     client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
   end
