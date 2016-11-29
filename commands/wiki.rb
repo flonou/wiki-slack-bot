@@ -23,9 +23,13 @@ require 'logging'
 =end
       def search (client, channel, searchQuery)
         @@logger.debug("Searching for #{searchQuery}")
-        response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
+        response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery, srprop: "title|sectionsnippet"
         @@logger.debug("res is #{response.data}")
-        client.message channel: channel, text: "#{response.data}"
+        @@logger.debug("res is #{response.data['search']}")
+        response.data['search'].each do |entry|
+          @@logger.debug("link : #{entry['title']}")
+        end
+        #client.message channel: channel, text: "#{response.data}"
       end
     end
   end
