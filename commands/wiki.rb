@@ -27,13 +27,13 @@ require 'logging'
         
         @@logger.debug("res is #{response.data}")
         @@logger.debug("res is #{response.data['search']}")
-        answer = ""
+        answer = "Results to " + searchQuery + " are : \n"
         response.data['search'].each do |entry|
            
           @@logger.debug("link : #{entry['title']}")
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
           @@logger.debug("res2 is #{response2.data}")
-          answer = answer + response2.data[3][0] + "\n" #+ entry['snippet']
+          answer = answer + "<"+response2.data[3][0]+"|"+entry['title'] + "\n" #+ entry['snippet']
         end
         client.message channel: channel, text: "#{answer}"
       end
