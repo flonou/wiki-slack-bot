@@ -24,7 +24,9 @@ require 'logging'
       def search (client, channel, searchQuery)
         @@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery, srprop: "title|sectionsnippet"
+        response2 = @@wiki_connection.action :opensearch, format: "xmlfm", search: searchQuery
         @@logger.debug("res is #{response.data}")
+        @@logger.debug("res2 is #{response2.data}")
         @@logger.debug("res is #{response.data['search']}")
         response.data['search'].each do |entry|
           @@logger.debug("link : #{entry['title']}")
