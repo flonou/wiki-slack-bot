@@ -24,7 +24,8 @@ require 'logging'
       def search (client, search)
         @@logger.debug("Searching for #{search}")
         response = @@wiki_connection.action :opensearch, search:search
-        @@logger.debug("res is #{response}")
+        @@logger.debug("res is #{response.data}")
+        @@logger.debug("res is #{response[0]}")
       end
     end
   end

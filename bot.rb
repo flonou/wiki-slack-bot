@@ -65,6 +65,7 @@ client.on :message do |data|
   end
   
   logger.debug(data['user'])
+  users = client.web_client.users_list
   #rebecca_user = client.web_client.users_info(user: "@rebecca.fribourg")
   #logger.debug(rebecca_user)
   #if rebecca_user == data['user'] then
