@@ -24,12 +24,15 @@ require 'logging'
       def search (client, channel, searchQuery)
         @@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery, srprop: "title|sectionsnippet"
-        response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "classic",search: searchQuery
+        
         @@logger.debug("res is #{response.data}")
-        @@logger.debug("res2 is #{response2.data}")
         @@logger.debug("res is #{response.data['search']}")
         response.data['search'].each do |entry|
           @@logger.debug("link : #{entry['title']}")
+          response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
+          @@logger.debug("res2 is #{response2.data}")
+          @@logger.debug("res2 is #{response2.data[0]}")
+          @@logger.debug("res2 is #{response2.data[2]}")
         end
         #client.message channel: channel, text: "#{response.data}"
       end
