@@ -1,6 +1,8 @@
 require 'slack-ruby-client'
 require 'logging'
+require_relative 'commands/wiki'
 
+wiki = Commands::Wiki.new
 logger = Logging.logger(STDOUT)
 logger.level = :debug
 
@@ -33,6 +35,23 @@ end
 client.on :message do |data|
 
   case data['text']
+  when 'connect' then
+    if direct_message?(data)
+      if wiki.wiki_connection.logged_in then
+        client.message channel: data['channel'], text: "I am already connected ! use disconnect to stop the connection"
+      else
+        values = data.split()
+        client.message channel: data['channel'], text: "I will try to connect to the wiki !"
+        wiki.wiki_connection = connect(values[1],values[2])
+        if wiki.wiki_connection.logged_in then
+          client.message channel: data['channel'], text: "Connected successfuly"
+        else
+          client.message channel: data['channel'], text: "Could not connect :("
+        end
+        logger.debug("Tried to connect")
+      end
+    end
+
   when 'hi', 'bot hi' then
     client.typing channel: data['channel']
     client.message channel: data['channel'], text: "Hello <@#{data['user']}>."

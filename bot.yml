@@ -1,6 +1,19 @@
 name: Beepboop Starterbot
 description: A simple Ruby bot starter for Beep Boop
 avatar: resources/avatar.png
+config:
+ - name: API_URL
+   friendly_name: The wiki API URL
+   type: text
+   gloabal: true
+ - name: USERNAME
+   friendly_name: Wiki username
+   type: text
+   gloabal: true
+ - name: PASSWORD
+   friendly_name: Wiki password
+   type: secret
+   gloabal: true
 #background: resources/background.png
 #config:
 #  - name: OPTION
