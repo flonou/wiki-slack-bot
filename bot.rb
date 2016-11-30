@@ -34,11 +34,16 @@ end
 
 webclient.chat_postMessage(channel: '#general', text: "I'm ready to get to work folks !", as_user: true)
 
+rebecca_id = -1
 users = client.web_client.users_list
 users.each do |entry|
   if entry[0] == "members" then
     entry[1].each do |user|
       logger.debug(user)
+      if (user['name']=="rebecca.fribourg") then
+        rebecca_id = user['id']
+        logger.debug("found rebecca : " + rebecca_id)
+      end
     end
     end
 end
@@ -76,20 +81,20 @@ client.on :message do |data|
     logger.debug("Unknown command")
   end
   
-  logger.debug(data['user'])
-  users = client.web_client.users_list
-  #rebecca_user = client.web_client.users_info(user: "@rebecca.fribourg")
-  #logger.debug(rebecca_user)
-  #if rebecca_user == data['user'] then
-#    client.typing channel: data['channel']
-#    client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
-#  end
-
-  values = data['text'].split(" ",2)
-  case values[0]
-  when 'wiki' then
-    logger.debug("Should search for : #{values[1]}")
-    wiki.search webclient, client, data['channel'], values[1]
+  
+  if rebecca_id == data['user'] then
+    client.typing channel: data['channel']
+    client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
+  end
+  if !data['text'].nil then
+    values = data['text'].split(" ",2)
+    if values.size >= 2 then
+      case values[0]
+      when 'wiki', '/wiki' then
+        logger.debug("Should search for : #{values[1]}")
+        wiki.search webclient, client, data['channel'], values[1]
+      end
+    end
   end
 
 end
