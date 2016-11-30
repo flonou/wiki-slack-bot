@@ -36,7 +36,11 @@ require 'logging'
           
           #answer = answer + "> *"+entry['title']+"*\t"+response2.data[3][0]+"\n" #+ entry['snippet']
           answer2 = answer2 + "><"+response2.data[3][0]+"|"+entry['title']+"> : "+ entry['snippet']+"\n" #+ entry['snippet']
+          parsedSnippet = entry['snippet'].gsub(/\<span class=\'searchmatch\'\>/, '*')
+          parsedSnippet = entry['snippet'].gsub(/\<\/span\>/, '*')
           parsedSnippet = entry['snippet'].gsub(/\<[^()]*?\>/, '')
+          parsedSnippet = entry['snippet'].gsub(/\'\'\'/, '*')
+          parsedSnippet = entry['snippet'].gsub(/===/, '*')
           @@logger.debug("parsed is #{parsedSnippet}")
         end
         #client.message channel: channel, text: "#{answer}"
