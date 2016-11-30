@@ -87,7 +87,10 @@ client.on :message do |data|
   if rebecca_id == data['user'] then
     possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre un stage ?","Je trouve que tu parles beaucoup pour une stagiaire <@#{data['user']}>..."]
     client.typing channel: data['channel']
-    client.message channel: data['channel'], text: possible_texts[rand(possible_texts.size)]
+    randValue = rand(possible_texts.size)*2
+    if (randValue < possible_texts.size) then
+      client.message channel: data['channel'], text: possible_texts[randValue]
+    end
   end
   #if !data['text'].nil then
     values = data['text'].split(" ",2)
