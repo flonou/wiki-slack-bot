@@ -48,7 +48,7 @@ users.each do |entry|
     end
 end
 
-possible_texts = []"va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre un stage ?","Je trouve que tu parles beaucoup pour une stagiaire <@#{data['user']}>..."]
+possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre un stage ?","Je trouve que tu parles beaucoup pour une stagiaire <@#{data['user']}>..."]
 
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
