@@ -23,9 +23,9 @@ require 'logging'
 =end
       def search (webclient, client, channel, searchQuery)
         #@@logger.debug("Searching for #{searchQuery}")
-        response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
+        response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery, srprop: "size|wordcount|timestamp|snippet|secionsnippet"
         
-        #@@logger.debug("res is #{response.data}")
+        @@logger.debug("res is #{response.data}")
         #@@logger.debug("res is #{response.data['search']}")
         #answer = "Results to *" + searchQuery + "* are : \n"
         answer2 = "Results to *" + searchQuery + "* are : \n"
