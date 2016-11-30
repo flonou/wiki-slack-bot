@@ -25,10 +25,10 @@ require 'logging'
         #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
         
-        @@logger.debug("res is #{response.data}")
+        #@@logger.debug("res is #{response.data}")
         #@@logger.debug("res is #{response.data['search']}")
         #answer = "Results to *" + searchQuery + "* are : \n"
-        #answer2 = "Results to *" + searchQuery + "* are : \n"
+        answer2 = "Results to *" + searchQuery + "* are : \n"
         response.data['search'].each do |entry|
            
           #@@logger.debug("link : #{entry['title']}")
