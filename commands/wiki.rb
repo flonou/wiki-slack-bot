@@ -39,12 +39,12 @@ require 'logging'
           parsedSnippet = entry['snippet'].gsub(/\<span class=\'searchmatch\'\>/, '*')
           parsedSnippet = parsedSnippet.gsub(/\<\/span\>/, '*')
           parsedSnippet = parsedSnippet.gsub(/\<[^()]*?\>/, '')
-          parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
-          parsedSnippet = parsedSnippet.gsub(/===/, '*')
+          #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
+          #parsedSnippet = parsedSnippet.gsub(/===/, '*')
           @@logger.debug("parsed is #{parsedSnippet}")
         end
         #client.message channel: channel, text: "#{answer}"
-        webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
+        webclient.chat_postMessage(channel: channel, text: parsedSnippet, as_user: true)
       end
     end
   end
