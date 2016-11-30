@@ -28,7 +28,7 @@ require 'logging'
         #@@logger.debug("res is #{response.data}")
         #@@logger.debug("res is #{response.data['search']}")
         #answer = "Results to *" + searchQuery + "* are : \n"
-        answer2 = "Results to *" + searchQuery + "* are : \n"
+        answer2 = "Results to *" + searchQuery + "* are : \n>>>"
         response.data['search'].each do |entry|
            
           #@@logger.debug("link : #{entry['title']}")
@@ -43,7 +43,7 @@ require 'logging'
           #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
           #parsedSnippet = parsedSnippet.gsub(/===/, '*')
           @@logger.debug("parsed is #{parsedSnippet}")
-          answer2 = answer2 + ">>><"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
+          answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
         #client.message channel: channel, text: "#{answer}"
         webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
