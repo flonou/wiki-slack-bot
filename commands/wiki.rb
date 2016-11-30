@@ -35,16 +35,17 @@ require 'logging'
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
           
           #answer = answer + "> *"+entry['title']+"*\t"+response2.data[3][0]+"\n" #+ entry['snippet']
-          answer2 = answer2 + "><"+response2.data[3][0]+"|"+entry['title']+"> : "+ entry['snippet']+"\n" #+ entry['snippet']
+          
           parsedSnippet = entry['snippet'].gsub(/\<span class=\'searchmatch\'\>/, '*')
           parsedSnippet = parsedSnippet.gsub(/\<\/span\>/, '*')
           parsedSnippet = parsedSnippet.gsub(/\<[^()]*?\>/, '')
           #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
           #parsedSnippet = parsedSnippet.gsub(/===/, '*')
           @@logger.debug("parsed is #{parsedSnippet}")
+          answer2 = answer2 + "><"+response2.data[3][0]+"|"+entry['title']+"> : "+ parsedSnippet+"\n" #+ entry['snippet']
         end
         #client.message channel: channel, text: "#{answer}"
-        webclient.chat_postMessage(channel: channel, text: parsedSnippet, as_user: true)
+        webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
       end
     end
   end
