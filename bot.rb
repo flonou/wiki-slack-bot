@@ -39,7 +39,7 @@ users = client.web_client.users_list
 users.each do |entry|
   if entry[0] == "members" then
     entry[1].each do |user|
-      logger.debug(user)
+      #logger.debug(user)
       if (user['name']=="rebecca.fribourg") then
         rebecca_id = user['id']
         logger.debug("found rebecca : " + rebecca_id)
