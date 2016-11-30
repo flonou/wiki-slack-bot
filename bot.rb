@@ -86,7 +86,7 @@ client.on :message do |data|
     client.typing channel: data['channel']
     client.message channel: data['channel'], text: "va bosser <@#{data['user']}>."
   end
-  if !data['text'].nil then
+  #if !data['text'].nil then
     values = data['text'].split(" ",2)
     if values.size >= 2 then
       case values[0]
@@ -95,7 +95,7 @@ client.on :message do |data|
         wiki.search webclient, client, data['channel'], values[1]
       end
     end
-  end
+  #end
 
 end
 
