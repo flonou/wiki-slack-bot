@@ -32,7 +32,7 @@ client.on :channel_joined do |data|
   end
 end
 
-#webclient.chat_postMessage(channel: '#general', text: "I'm ready to get to work folks !", as_user: true)
+webclient.chat_postMessage(channel: '#general', text: "I'm ready to get to work folks !", as_user: true)
 
 rebecca_id = -1
 users = client.web_client.users_list
