@@ -39,9 +39,9 @@ require 'logging'
           parsedSnippet = entry['snippet'].gsub(/\<span class=\'searchmatch\'\>/, '*')
           parsedSnippet = parsedSnippet.gsub(/\<\/span\>/, '*')
           parsedSnippet = parsedSnippet.gsub(/\<[^()]*?\>/, '')
-          parsedSnippet = parsedSnippet.gsub(/\n/, ' \n>')
+          parsedSnippet = parsedSnippet.gsub(/\n/, "\n>")
           # change last character
-          parsedSnippet[parsedSnippet.size-1] = '\n' 
+          parsedSnippet[parsedSnippet.size-1] = "\n" 
           #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
           #parsedSnippet = parsedSnippet.gsub(/===/, '*')
           @@logger.debug("parsed is #{parsedSnippet}")
