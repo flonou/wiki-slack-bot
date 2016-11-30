@@ -33,9 +33,11 @@ require 'logging'
            
           #@@logger.debug("link : #{entry['title']}")
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
-          #@@logger.debug("res2 is #{response2.data}")
+          
           #answer = answer + "> *"+entry['title']+"*\t"+response2.data[3][0]+"\n" #+ entry['snippet']
           answer2 = answer2 + "><"+response2.data[3][0]+"|"+entry['title']+"> : "+ entry['snippet']+"\n" #+ entry['snippet']
+          parsedSnippet = @@wiki_connection.action :parse, prop: "text", text: entry['snippet']
+          @@logger.debug("parsed is #{parsedSnippet.data}")
         end
         #client.message channel: channel, text: "#{answer}"
         webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
