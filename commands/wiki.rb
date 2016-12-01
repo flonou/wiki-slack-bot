@@ -48,6 +48,7 @@ require 'logging'
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
         #client.message channel: channel, text: "#{answer}"
+        client.typing channel: data['channel']
         webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
       end
     end
