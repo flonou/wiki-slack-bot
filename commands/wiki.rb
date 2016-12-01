@@ -22,13 +22,14 @@ require 'logging'
       end
 =end
       def search (webclient, client, channel, searchQuery)
+        client.typing channel: channel
         #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
         
         #@@logger.debug("res is #{response.data}")
         @@logger.debug("res is #{response.data['search']}")
         #answer = "Results to *" + searchQuery + "* are : \n"
-        answer2 = "Results to *" + searchQuery + "* are : \n>>>"
+        answer2 = ">>>"
         response.data['search'].each do |entry|
            
           #@@logger.debug("link : #{entry['title']}")
@@ -48,7 +49,7 @@ require 'logging'
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
         #client.message channel: channel, text: "#{answer}"
-        client.typing channel: channel
+        client.message channel: channel, text: "Results to *" + searchQuery + "* are : "
         webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
       end
     end
