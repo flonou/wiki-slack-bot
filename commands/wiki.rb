@@ -22,7 +22,6 @@ require 'logging'
       end
 =end
       def search (webclient, client, channel, searchQuery)
-        client.typing channel: channel
         #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
         
