@@ -122,6 +122,7 @@ end
 
 def help
   %Q(I will respond to the following messages: \n
+      `wiki <search request> to search for something in the wiki`
       `bot hi` for a simple message.\n
       `bot attachment` to see a Slack attachment message.\n
       `@<your bot\'s name>` to demonstrate detecting a mention.\n
