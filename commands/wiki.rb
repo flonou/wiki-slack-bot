@@ -40,10 +40,12 @@ require 'logging'
           parsedSnippet = parsedSnippet.gsub(/\<\/span\>/, '*')
           parsedSnippet = parsedSnippet.gsub(/\<[^()]*?\>/, '')
           parsedSnippet = parsedSnippet.gsub(/\n/, "\n>")
-          # change last character
-          parsedSnippet[parsedSnippet.size-1] = "\n" 
-          #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
-          #parsedSnippet = parsedSnippet.gsub(/===/, '*')
+          if parsedSnippet.size > 0 then
+            # change last character
+            parsedSnippet[parsedSnippet.size-1] = "\n" 
+            #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
+            #parsedSnippet = parsedSnippet.gsub(/===/, '*')
+          end
           @@logger.debug("parsed is #{parsedSnippet}")
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end

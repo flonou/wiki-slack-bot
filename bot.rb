@@ -47,7 +47,7 @@ users.each do |entry|
     entry[1].each do |user|
       #logger.debug(user)
       if (user['name']=="rebecca.fribourg" || user['name']=="beckou") then
-        rebecca_id = user['id']
+        # rebecca_id = user['id']
         logger.debug("found rebecca : " + rebecca_id)
       end
     end
