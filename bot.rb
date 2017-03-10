@@ -48,8 +48,8 @@ users.each do |entry|
       #logger.debug(user)
       if (user['name']=="rebecca.fribourg" || user['name']=="beckou") then
         # rebecca_id = user['id']
-        # logger.debug("found rebecca : " + rebecca_id)
-        logger.debug("found rebecca : " + rebecca_id + " but ignoring for now !")
+        logger.debug("found rebecca : " + user['id'])
+        logger.debug("found rebecca : " + user['id'] + " but ignoring for now !")
       end
     end
     end
