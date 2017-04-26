@@ -23,7 +23,7 @@ require 'logging'
 =end
       def search (webclient, client, channel, searchQuery)
         #@@logger.debug("Searching for #{searchQuery}")
-        response = @@wiki_connection.action :query, list: "search", srwhat: "text", srsearch: searchQuery
+        response = @@wiki_connection.action :query, list: "search", srwhat: "text", srprop: "snippet&sectiontitle", srsearch: searchQuery
         
         #@@logger.debug("res is #{response.data}")
         @@logger.debug("res is #{response.data['search']}")
@@ -46,6 +46,7 @@ require 'logging'
             #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
             #parsedSnippet = parsedSnippet.gsub(/===/, '*')
           end
+          @@logger.debug("response2 is #{response2.data[0]}")
           @@logger.debug("parsed is #{parsedSnippet}")
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
