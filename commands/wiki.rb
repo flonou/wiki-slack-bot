@@ -24,11 +24,12 @@ require 'logging'
       def search (webclient, client, channel, searchQuery)
         #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srprop: "snippet|sectiontitle", srsearch: searchQuery
-        
+        testResponde = @@wiki_connection.action :quer, format: "xml", prop:"extracts", generator:"search", exsentences:"2", explaintext:"1", gsrwhat:"text", gsrprop:"snippet", gsrsearch: searchQuery
         #@@logger.debug("res is #{response.data}")
         @@logger.debug("res is #{response.data['search']}")
         #answer = "Results to *" + searchQuery + "* are : \n"
         answer2 = "Results to *" + searchQuery + "* are : \n>>>"
+        
         response.data['search'].each do |entry|
            
           #@@logger.debug("link : #{entry['title']}")
@@ -53,11 +54,20 @@ require 'logging'
           @@logger.debug("response2 is #{response2.data[0]}")
           @@logger.debug("response2 is #{response2.data[1]}")
           @@logger.debug("response2 is #{response2.data[2]}")
+          @@logger.debug("response2 is #{response2.data[3]}")
           @@logger.debug("parsed is #{parsedSnippet}")
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
+        @@logger.debug("test2")
+        testResponde.data['pages'].each do |entry|
+          @@logger.debug("entry is: #{entry}")
+          @@logger.debug("entry[0] is: #{entry[0]}")
+          response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
+        end
+
         #client.message channel: channel, text: "#{answer}"
         webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
       end
     end
   end
+
