@@ -13,7 +13,7 @@ require 'logging'
         @@logger.debug("Could not connect :(")
       end
 =begin
-      wiki_connection = MediawikiApi::Client.new "https://wiki.inria.fr/hybrid/api.php"
+      wiki_connection = MediawikiApi::Client.new "https://wiki.inria.fr/wikis/hybrid/api.php"
       wiki_connection.log_in "username", "password"
       match(/^!wiki search (?<terms>\w*)\s(?<contentwiki>.*)$/) do |client, data, match |
         response = wiki_connection.query titles: match[:terms]
@@ -33,7 +33,7 @@ require 'logging'
         response.data['search'].each do |entry|
            
           #@@logger.debug("link : #{entry['title']}")
-          response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
+          response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "fuzzy",search: entry['title']
           
           #answer = answer + "> *"+entry['title']+"*\t"+response2.data[3][0]+"\n" #+ entry['snippet']
           
@@ -51,15 +51,18 @@ require 'logging'
           if title then
             @@logger.debug("section title is #{title}")
           end
+=begin
           @@logger.debug("response2 is #{response2.data[0]}")
           @@logger.debug("response2 is #{response2.data[1]}")
           @@logger.debug("response2 is #{response2.data[2]}")
           @@logger.debug("response2 is #{response2.data[3]}")
           @@logger.debug("parsed is #{parsedSnippet}")
+=end
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
 
-
+#requires TextExtracts extension :/
+=begin
         @@logger.debug("test2")
         @@logger.debug("response is : #{testResponse}")
         zerfqzefzef = testResponse['query']
@@ -67,8 +70,6 @@ require 'logging'
         @@logger.debug("response[query] is : #{zerfqzefzef}")
         zefqzefqzefq = zerfqzefzef['pages']
         @@logger.debug("response[query] is : #{zefqzefqzefq}")
-        @@logger.debug("response[query][pages] is :"+ testResponse['query']['pages'])
-        @@logger.debug("response[query][pages][0] is :+"+ testResponse['query']['pages'][0])
         @@logger.debug("response.data is : #{testResponse.data}")
         testResponse.data['pages'].each do |entry|
           @@logger.debug("entry is: #{entry}")
@@ -78,7 +79,7 @@ require 'logging'
           @@logger.debug("entry.data is: #{extract}")
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entryTitle
         end
-
+=end
         #client.message channel: channel, text: "#{answer}"
         webclient.chat_postMessage(channel: channel, text: answer2, as_user: true)
       end
