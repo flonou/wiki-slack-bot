@@ -58,14 +58,16 @@ require 'logging'
           @@logger.debug("parsed is #{parsedSnippet}")
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
+
+        
         @@logger.debug("test2")
         testResponde.data['pages'].each do |entry|
           @@logger.debug("entry is: #{entry}")
-          entryTitle = entry['title']
+          entryTitle = entry[1]['title']
           @@logger.debug("entryTitle is: #{entryTitle}")
           extract = entry.data
           @@logger.debug("entry.data is: #{extract}")
-          response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
+          response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entryTitle
         end
 
         #client.message channel: channel, text: "#{answer}"
