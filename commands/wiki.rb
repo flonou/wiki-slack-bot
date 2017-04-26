@@ -67,7 +67,6 @@ require 'logging'
           @@logger.debug("entry is: #{entry}")
           entryTitle = entry[1]['title']
           @@logger.debug("entryTitle is: #{entryTitle}")
-          if 
           extract = entry['extract']
           @@logger.debug("entry.data is: #{extract}")
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entryTitle
