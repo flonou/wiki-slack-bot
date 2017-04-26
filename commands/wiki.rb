@@ -62,7 +62,8 @@ require 'logging'
 
         @@logger.debug("test2")
         @@logger.debug("response is : #{testResponse}")
-        @@logger.debug("response[query] is :"+ testResponse['query'])
+        zerfqzefzef = testResponse['query']
+        @@logger.debug("response[query] is :"+ zerfqzefzef)
         @@logger.debug("response[query][pages] is :"+ testResponse['query']['pages'])
         @@logger.debug("response[query][pages][0] is :+"+ testResponse['query']['pages'][0])
         @@logger.debug("response.data is : #{testResponse.data}")
