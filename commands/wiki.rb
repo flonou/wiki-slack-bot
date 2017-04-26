@@ -62,9 +62,9 @@ require 'logging'
 
         @@logger.debug("test2")
         @@logger.debug("response is : #{testResponse}")
-        @@logger.debug("response[query] is :+" testResponse['query']})
-        @@logger.debug("response[query][pages] is :+" testResponse['query']['pages']})
-        @@logger.debug("response[query][pages][0] is :+" testResponse['query']['pages'][0]})
+        @@logger.debug("response[query] is :"+ testResponse['query']})
+        @@logger.debug("response[query][pages] is :"+ testResponse['query']['pages']})
+        @@logger.debug("response[query][pages][0] is :+"+ testResponse['query']['pages'][0]})
         @@logger.debug("response.data is : #{testResponse.data}")
         testResponse.data['pages'].each do |entry|
           @@logger.debug("entry is: #{entry}")
