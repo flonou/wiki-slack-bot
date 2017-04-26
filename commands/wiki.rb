@@ -24,7 +24,7 @@ require 'logging'
       def search (webclient, client, channel, searchQuery)
         #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srprop: "snippet|sectiontitle", srsearch: searchQuery
-        testResponde = @@wiki_connection.action :query, format: "xml", prop:"extracts", generator:"search", exsentences:"2", explaintext:"1", gsrwhat:"text", gsrprop:"snippet", gsrsearch: searchQuery
+        testResponse = @@wiki_connection.action :query, format: "xml", prop:"extracts", generator:"search", exsentences:"2", explaintext:"1", gsrwhat:"text", gsrprop:"snippet", gsrsearch: searchQuery
         #@@logger.debug("res is #{response.data}")
         @@logger.debug("res is #{response.data['search']}")
         #answer = "Results to *" + searchQuery + "* are : \n"
@@ -61,7 +61,8 @@ require 'logging'
 
 
         @@logger.debug("test2")
-        testResponde.data['pages'].each do |entry|
+        @@logger.debug("response is : #{testResponse}")
+        testResponse.data['pages'].each do |entry|
           @@logger.debug("entry is: #{entry}")
           entryTitle = entry[1]['title']
           @@logger.debug("entryTitle is: #{entryTitle}")
