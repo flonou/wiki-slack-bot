@@ -46,7 +46,13 @@ require 'logging'
             #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
             #parsedSnippet = parsedSnippet.gsub(/===/, '*')
           end
+          title = entry['sectiontitle']
+          if title then
+            @@logger.debug("section title is #{title}")
+          end
           @@logger.debug("response2 is #{response2.data[0]}")
+          @@logger.debug("response2 is #{response2.data[1]}")
+          @@logger.debug("response2 is #{response2.data[2]}")
           @@logger.debug("parsed is #{parsedSnippet}")
           answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
         end
