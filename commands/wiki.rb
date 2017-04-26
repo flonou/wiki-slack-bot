@@ -61,7 +61,10 @@ require 'logging'
         @@logger.debug("test2")
         testResponde.data['pages'].each do |entry|
           @@logger.debug("entry is: #{entry}")
-          @@logger.debug("entry[0] is: #{entry[0]}")
+          entryTitle = entry['title']
+          @@logger.debug("entryTitle is: #{entryTitle}")
+          extract = entry.data
+          @@logger.debug("entry.data is: #{extract}")
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "strict",search: entry['title']
         end
 
