@@ -81,7 +81,7 @@ client.on :message do |data|
     client.message channel: data['channel'], text: 'You really do care about me. :heart:'
     logger.debug("Bot mentioned in channel #{data['channel']}")
 
-  when 'bot help', 'help' then
+  when 'bot help', 'help', 'bot' then
     client.message channel: data['channel'], text: help
     logger.debug("A call for help")
 
