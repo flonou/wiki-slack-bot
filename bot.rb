@@ -60,7 +60,7 @@ end
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
 
-  case data['text']
+  case data['text'].downcase
 
   when 'hi', 'bot hi' then
     client.typing channel: data['channel']
@@ -85,14 +85,14 @@ client.on :message do |data|
     client.message channel: data['channel'], text: help
     logger.debug("A call for help")
 
-  when /^bot/ then
+  when /^bot / then
     client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
     logger.debug("Unknown command")
   end
   
   
   if rebecca_id == data['user'] then
-    possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre un stage ?","Je trouve que tu parles beaucoup pour une stagiaire <@#{data['user']}>..."]
+    possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
     randValue = rand(possible_texts.size)*5
     if (randValue < possible_texts.size) then
       client.typing channel: data['channel']
