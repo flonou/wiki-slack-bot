@@ -12,7 +12,7 @@ config:
    gloabal: true
  - name: PASSWORD
    friendly_name: Wiki password
-   type: secret
+   type: text
    gloabal: true
 #background: resources/background.png
 #config:
