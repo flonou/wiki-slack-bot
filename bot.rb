@@ -6,9 +6,13 @@ logger = Logging.logger(STDOUT)
 logger.level = :debug
 
 Slack.configure do |config|
-  config.token = ENV['SLACK_TOKEN']
+  for i in 0 ... ARGV.length
+    if (ARGV[i] == "-token" && i+1 < ARGV.length)
+      config.token = ARGV[i+1]
+    end
+  end
   if not config.token
-    logger.fatal('Missing ENV[SLACK_TOKEN]! Exiting program')
+    logger.fatal('Missing token ! Use the -token [TOKEN] argument. Exiting program')
     exit
   end
 end

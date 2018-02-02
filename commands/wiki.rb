@@ -4,9 +4,32 @@ require 'logging'
     class Wiki
       @@logger = Logging.logger(STDOUT)
       @@logger.level = :debug
-      @@wiki_connection = MediawikiApi::Client.new ENV['API_URL']
-      @@logger.debug("I will try to connect to the wiki as #{ENV['USERNAME']}!")
-      @@wiki_connection.log_in ENV['USERNAME'], ENV['PASSWORD']
+      for i in 0 ... ARGV.length
+        if(ARGV[i] == "-url" && i+1<ARGV.length)
+	  @@url = ARGV[i+1]
+	end
+	if(ARGV[i] == "-username" && i+1<ARGV.length)
+	  @@username = ARGV[i+1]
+	end
+	if(ARGV[i] == "-password" && i+1<ARGV.length)
+	  @@password = ARGV[i+1]
+	end
+      end
+      if not @@url
+        logger.fatal('Missing Wiki api url. use -url option.')
+	exit
+      end
+      if not @@username
+        logger.fatal('Missing Wiki username. use -username option.')
+	exit
+      end
+      if not @@password
+        logger.fatal('Missing Wiki account password. use -password option.')
+	exit
+      end
+      @@wiki_connection = MediawikiApi::Client.new @@url
+      @@logger.debug("I will try to connect to the wiki as #{@@username}!")
+      @@wiki_connection.log_in @@username, @@password
       if @@wiki_connection.logged_in then
         @@logger.debug("Connected successfuly")
       else
