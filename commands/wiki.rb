@@ -6,26 +6,26 @@ require 'logging'
       @@logger.level = :debug
       for i in 0 ... ARGV.length
         if(ARGV[i] == "-url" && i+1<ARGV.length)
-	  @@url = ARGV[i+1]
-	end
-	if(ARGV[i] == "-username" && i+1<ARGV.length)
-	  @@username = ARGV[i+1]
-	end
-	if(ARGV[i] == "-password" && i+1<ARGV.length)
-	  @@password = ARGV[i+1]
-	end
+	        @@url = ARGV[i+1]
+	      end
+	      if(ARGV[i] == "-username" && i+1<ARGV.length)
+	        @@username = ARGV[i+1]
+	      end
+	      if(ARGV[i] == "-password" && i+1<ARGV.length)
+	        @@password = ARGV[i+1]
+	      end
       end
       if not @@url
         logger.fatal('Missing Wiki api url. use -url option.')
-	exit
+	      exit
       end
       if not @@username
         logger.fatal('Missing Wiki username. use -username option.')
-	exit
+	      exit
       end
       if not @@password
         logger.fatal('Missing Wiki account password. use -password option.')
-	exit
+	      exit
       end
       @@wiki_connection = MediawikiApi::Client.new @@url
       @@logger.debug("I will try to connect to the wiki as #{@@username}!")
