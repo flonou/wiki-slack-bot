@@ -44,17 +44,56 @@ require 'logging'
         client.say(channel: data.channel, text: "Your wiki is created http://MediaWiki-URL?curid=#{pageid}")
       end
 =end
+
+	def reformat(text)
+		return text
+	end
+
+	def extractData(text, searchQuery)
+#		@@logger.debug("extracting #{searchQuery} from #{text}")
+	
+		nbLines = text.lines.count
+		linesId = 0
+		lastSectionLine = 0
+#		@@logger.debug("got #{nbLines} lines")
+
+		for i in 0..nbLines-1
+#			@@logger.debug("looking at #{text.lines[i]}")
+			if text.lines[i].match(/^[=]/)
+				lastSectionLine = i
+			end
+			lineId = i
+			break if text.lines[i].downcase.include?(searchQuery.downcase)
+		end
+
+		result = ">" + reformat(text.lines[lastSectionLine].gsub(/#{searchQuery}/i, "*#{searchQuery}*"))
+	
+		for j in lastSectionLine+1..nbLines-1
+		#if lineId + 1 < nbLines
+			break if text.lines[j].match(/^[=]/)
+			if text.lines[j] != "\n"
+				result = result + ">" + reformat(text.lines[j].gsub(/#{searchQuery}/i, "*#{searchQuery}*"))
+			end
+		end
+
+		return result
+	end
+
       def search (webclient, client, channel, searchQuery)
         #@@logger.debug("Searching for #{searchQuery}")
         response = @@wiki_connection.action :query, list: "search", srwhat: "text", srprop: "snippet|sectiontitle", srsearch: searchQuery
-        testResponse = @@wiki_connection.action :query, format: "xml", prop:"extracts", generator:"search", exsentences:"2", exlimite:"5", exintro:"1", explaintext:"1", gsrwhat:"text", gsrsearch: searchQuery
-        #@@logger.debug("res is #{response.data}")
+#        testResponse = @@wiki_connection.action :query, format: "xml", prop:"extracts", generator:"search", exsentences:"3", exlimite:"5", exintro:"1", explaintext:"1", gsrwhat:"text", gsrsearch: searchQuery
+#        @@logger.debug("res is #{response.data}")
         @@logger.debug("res is #{response.data['search']}")
         #answer = "Results to *" + searchQuery + "* are : \n"
         answer2 = "Results to *" + searchQuery + "* are : \n>>>"
         
+	lastResponse = ""
+
         response.data['search'].each do |entry|
            
+
+
           #@@logger.debug("link : #{entry['title']}")
           response2 = @@wiki_connection.action :opensearch, format: "xml", profile: "fuzzy",search: entry['title']
           
@@ -70,18 +109,36 @@ require 'logging'
             #parsedSnippet = parsedSnippet.gsub(/\'\'\'/, '*')
             #parsedSnippet = parsedSnippet.gsub(/===/, '*')
           end
-          title = entry['sectiontitle']
-          if title then
-            @@logger.debug("section title is #{title}")
-          end
+
+        	testResponse = @@wiki_connection.action :parse, prop: "wikitext", page:entry['title']
+	
+		@@logger.debug("test res with parse is #{testResponse.data}")
+#		@@logger.debug("test res2 with parse is #{testResponse.data['text']}")
+#		@@logger.debug("test res3 with parse is #{testResponse.data['text']['*']}")
+
+		parseResult = extractData(testResponse.data['wikitext']['*'], searchQuery)
+
+		@@logger.debug("Parsed is : #{parseResult}")
+
+          	title = entry['sectiontitle']
+          	if title then
+            		@@logger.debug("section title is #{title}")
+          	end
 =begin
-          @@logger.debug("response2 is #{response2.data[0]}")
-          @@logger.debug("response2 is #{response2.data[1]}")
-          @@logger.debug("response2 is #{response2.data[2]}")
-          @@logger.debug("response2 is #{response2.data[3]}")
-          @@logger.debug("parsed is #{parsedSnippet}")
+          	@@logger.debug("response2 is #{response2.data[0]}")
+          	@@logger.debug("response2 is #{response2.data[1]}")
+          	@@logger.debug("response2 is #{response2.data[2]}")
+          	@@logger.debug("response2 is #{response2.data[3]}")
+          	@@logger.debug("parsed is #{parsedSnippet}")
 =end
-          answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n>"+ parsedSnippet+"\n" #+ entry['snippet']
+		# ignore if we already had the same section in result
+		next if parseResult == lastResponse
+
+          	answer2 = answer2 + "<"+response2.data[3][0]+"|"+entry['title']+"> : \n"
+#	  	answer2 = answer2 + parsedSnippet+"\n" 
+	  	answer2 = answer2 + parseResult#+ entry['snippet']
+
+		lastResponse = parseResult
         end
 
 #requires TextExtracts extension :/
