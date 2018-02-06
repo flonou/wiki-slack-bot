@@ -45,7 +45,21 @@ require 'logging'
       end
 =end
 
+	def boldQuery(text,query)
+		text.gsub(/(#{query})/i, "*\\1*")
+	end
+
 	def reformat(text)
+		# remove images
+		text.gsub!(/\[\[.*\]\]/,"")
+		# reformat links
+		text.gsub!(/\[(\S*)\s([^\]]+)\]/,"<\\1|\\2>")
+		# reformat bold
+		text.gsub!(/\'\'\'([^\']+)\'\'\'/,"_\\1_")
+		# reformat list
+		text.gsub!(/^\*\S*(.+)$/,"- \\1")
+		# reformat section title
+		text.gsub!(/^\S*=+\S*([^=]+)\S*=+\S*/,"\t_\\1_")
 		return text
 	end
 
@@ -66,13 +80,13 @@ require 'logging'
 			break if text.lines[i].downcase.include?(searchQuery.downcase)
 		end
 
-		result = ">" + reformat(text.lines[lastSectionLine].gsub(/#{searchQuery}/i, "*#{searchQuery}*"))
+		result = reformat(boldQuery(text.lines[lastSectionLine],searchQuery))
 	
 		for j in lastSectionLine+1..nbLines-1
 		#if lineId + 1 < nbLines
 			break if text.lines[j].match(/^[=]/)
 			if text.lines[j] != "\n"
-				result = result + ">" + reformat(text.lines[j].gsub(/#{searchQuery}/i, "*#{searchQuery}*"))
+				result = result + ">" + reformat(boldQuery(text.lines[j],searchQuery))
 			end
 		end
 
