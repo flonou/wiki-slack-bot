@@ -64,56 +64,59 @@ end
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
 
-  case data['text'].downcase
+	if data['text']
+		case data['text'].downcase
 
-  when 'hi', 'bot hi' then
-    client.typing channel: data['channel']
-    client.message channel: data['channel'], text: "Hello <@#{data['user']}>."
-    logger.debug("<@#{data['user']}> said hi")
+		when 'hi', 'bot hi' then
+			client.typing channel: data['channel']
+			client.message channel: data['channel'], text: "Hello <@#{data['user']}>."
+			logger.debug("<@#{data['user']}> said hi")
 
-    if direct_message?(data)
-      client.message channel: data['channel'], text: "It\'s nice to talk to you directly."
-      logger.debug("And it was a direct message")
-    end
+			if direct_message?(data)
+		      		client.message channel: data['channel'], text: "It\'s nice to talk to you directly."
+		      		logger.debug("And it was a direct message")
+		    	end
 
-  when 'attachment', 'bot attachment' then
-    # attachment messages require using web_client
-    client.web_client.chat_postMessage(post_message_payload(data))
-    logger.debug("Attachment message posted")
+		when 'attachment', 'bot attachment' then
+			    	# attachment messages require using web_client
+			    	client.web_client.chat_postMessage(post_message_payload(data))
+			    	logger.debug("Attachment message posted")
 
-  when bot_mentioned(client)
-    client.message channel: data['channel'], text: 'You really do care about me. :heart:'
-    logger.debug("Bot mentioned in channel #{data['channel']}")
+		when bot_mentioned(client)
+			client.message channel: data['channel'], text: 'You really do care about me. :heart:'
+			logger.debug("Bot mentioned in channel #{data['channel']}")
 
-  when 'bot help', 'help', 'bot' then
-    client.message channel: data['channel'], text: help
-    logger.debug("A call for help")
+		when 'bot help', 'help', 'bot' then
+		    	client.message channel: data['channel'], text: help
+		    	logger.debug("A call for help")
 
-  when /^bot / then
-    client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
-    logger.debug("Unknown command")
-  end
+	  	when /^bot / then
+    			client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
+    			logger.debug("Unknown command")
+	  	end
   
   
-  if rebecca_id == data['user'] then
-    possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
-    randValue = rand(possible_texts.size)*5
-    if (randValue < possible_texts.size) then
-      client.typing channel: data['channel']
-      client.message channel: data['channel'], text: possible_texts[randValue]
-    end
-  end
-  if data['text'] != nil then
-    values = data['text'].split(" ",2)
-    if values.size >= 2 then
-      case values[0]
-      when 'wiki', '/wiki' then
-        logger.debug("Should search for : #{values[1]}")
-        wiki.search webclient, client, data['channel'], values[1]
-      end
-    end
-  end
-
+  		if rebecca_id == data['user'] then
+    			possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
+	    		randValue = rand(possible_texts.size)*5
+    			if (randValue < possible_texts.size) then
+      				client.typing channel: data['channel']
+      				client.message channel: data['channel'], text: possible_texts[randValue]
+	    		end
+  		end
+	  	if data['text'] != nil then
+    			values = data['text'].split(" ",2)
+    			if values.size >= 2 then
+      			
+				case values[0]
+      				
+				when 'wiki', '/wiki' then
+        				logger.debug("Should search for : #{values[1]}")
+        				wiki.search webclient, client, data['channel'], values[1]
+      				end
+    			end
+  		end
+	end
 end
 
 
