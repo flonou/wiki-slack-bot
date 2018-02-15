@@ -61,7 +61,13 @@ require 'logging'
 		# reformat section title
 		text.gsub!(/^\S*=+\S*([^=]+)\S*=+\S*/,"\t_\\1_")
 		return text
-	end
+  end
+  
+  def clean(text)
+    # remove links
+		text.gsub!(/\[(\S*)\s([^\]]+)\]/,"\\2")
+		
+  end
 
 	def extractData(text, searchQuery)
 #		@@logger.debug("extracting #{searchQuery} from #{text}")
@@ -78,11 +84,14 @@ require 'logging'
 				lastSectionLine = i
 			end
 			lineId = i
-			break if text.lines[i].downcase.include?(searchQuery.downcase)
+      if text.lines[i].downcase.include?(clean(searchQuery.downcase))
+        @@logger.debug("found query")
+        break
+      end
     end
     # If we match in the section title, try to show the whole section ?
     if lineId == lastSectionLine
-      lineId++
+      lineId += 1
     end
 		result = reformat(boldQuery(text.lines[lastSectionLine],searchQuery))
 	
