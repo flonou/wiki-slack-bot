@@ -72,14 +72,18 @@ require 'logging'
 #		@@logger.debug("got #{nbLines} lines")
 
 		for i in 0..nbLines-1
-#			@@logger.debug("looking at #{text.lines[i]}")
+			@@logger.debug("looking at #{text.lines[i]}")
 			if text.lines[i].match(/^[=]/)
+        @@logger.debug("last section")
 				lastSectionLine = i
 			end
 			lineId = i
 			break if text.lines[i].downcase.include?(searchQuery.downcase)
-		end
-
+    end
+    # If we match in the section title, try to show the whole section ?
+    if lineId == lastSectionLine
+      lineId++
+    end
 		result = reformat(boldQuery(text.lines[lastSectionLine],searchQuery))
 	
 		for j in lastSectionLine+1..nbLines-1
