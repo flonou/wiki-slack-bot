@@ -64,8 +64,9 @@ require 'logging'
   end
   
   def clean(text)
-    # remove links
-		text.gsub!(/\[\S*\s([^\]]+)\]/,"\\1")
+    # remove links url
+    text.gsub!(/\[\S*\s([^\]]+)\]/,"\\1")
+#    @@logger.debug("after clean : #{text}")
     return text	
   end
 
@@ -78,14 +79,14 @@ require 'logging'
 #		@@logger.debug("got #{nbLines} lines")
 
 		for i in 0..nbLines-1
-			@@logger.debug("looking at #{text.lines[i]}")
+#			@@logger.debug("looking at #{text.lines[i]}")
 			if text.lines[i].match(/^[=]/)
-        @@logger.debug("last section")
+#       @@logger.debug("last section")
 				lastSectionLine = i
 			end
 			lineId = i
-      if text.lines[i].downcase.include?(clean(searchQuery.downcase))
-        @@logger.debug("found query")
+      if clean(text.lines[i]).downcase.include?(searchQuery.downcase)
+#        @@logger.debug("found query")
         break
       end
     end
