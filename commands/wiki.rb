@@ -65,9 +65,8 @@ require 'logging'
   
   def clean(text)
     # remove links
-@@logget.debug("before : #{text}")
 		text.gsub!(/\[\S*\s([^\]]+)\]/,"\\1")
-    @@logget.debug("after : #{text}")	
+    return text	
   end
 
 	def extractData(text, searchQuery)
