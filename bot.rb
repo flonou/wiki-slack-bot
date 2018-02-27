@@ -30,6 +30,7 @@ client.on :goodbye do
   logger.debug("'#{client.self['name']}' will be disconnected from '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com. by the server")
   webclient = Slack::Web::Client.new
   client = Slack::RealTime::Client.new
+  wiki = Commands::Wiki.new
 end
 
 # listen for channel_joined event - https://api.slack.com/events/channel_joined
