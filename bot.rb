@@ -1,5 +1,8 @@
 require 'slack-ruby-client'
 require 'logging'
+#require 'uri'
+#require 'net/http'
+#require 'json'
 require_relative 'commands/wiki'
 
 logger = Logging.logger(STDOUT)
@@ -26,11 +29,24 @@ client.on :hello do
   logger.debug("Connected '#{client.self['name']}' to '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com.")
 end
 
+client.on :close do |_data|
+  puts 'Connection closing, exiting.'
+#  client = Slack::RealTime::Client.new
+#  client.restart!
+#  puts 'Client started again'
+  client.stop!
+end
+
+client.on :closed do |_data|
+  puts 'Connection has been closed.'
+  client.start!
+end
+
+
 client.on :goodbye do
   logger.debug("'#{client.self['name']}' will be disconnected from '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com. by the server")
-  webclient = Slack::Web::Client.new
   client = Slack::RealTime::Client.new
-  wiki = Commands::Wiki.new
+  client.start!
 end
 
 # listen for channel_joined event - https://api.slack.com/events/channel_joined
@@ -87,16 +103,28 @@ client.on :message do |data|
 			client.message channel: data['channel'], text: 'You really do care about me. :heart:'
 			logger.debug("Bot mentioned in channel #{data['channel']}")
 
+
+		when 'bot close' then
+		    	logger.debug("Closing connection")
+	                client.on( :close)
+	                client.on( :closed)
+#            		client.close(nil)
+#			client.callback(nil, :closed)
+
 		when 'bot help', 'help', 'bot' then
 		    	client.message channel: data['channel'], text: help
 		    	logger.debug("A call for help")
+
+		when 'bot clear' then
+			client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token"
+			clear_files(client, data['channel'])  
+
 
 	  	when /^bot / then
     			client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
     			logger.debug("Unknown command")
 	  	end
-  
-  
+		
   		if rebecca_id == data['user'] then
     			possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
 	    		randValue = rand(possible_texts.size)*5
@@ -120,6 +148,46 @@ client.on :message do |data|
 	end
 end
 
+def list_files
+  nbdays = 30*6;
+  ts_to = (Time.now - nbdays * 24 * 60 * 60).to_i
+  params = {
+    token: Slack.configure.token,
+    ts_to: ts_to,
+    count: 1000
+  }
+  uri = URI.parse('https://slack.com/api/files.list')
+  uri.query = URI.encode_www_form(params)
+  response = Net::HTTP.get_response(uri)
+logger = Logging.logger(STDOUT)
+logger.level = :debug
+  logger.debug(response.body)
+  JSON.parse(response.body)['files']
+end
+
+def delete_files(file_ids)
+  file_ids.each do |file_id|
+    params = {
+    token: Slack.configure.token,
+      file: file_id
+    }
+    uri = URI.parse('https://slack.com/api/files.delete')
+    uri.query = URI.encode_www_form(params)
+    response = Net::HTTP.get_response(uri)
+    p "#{file_id}: #{JSON.parse(response.body)['ok']}"
+  end
+end
+
+def clear_files(client, channel)
+  files = list_files
+  if files != nil then
+    length = files.length
+    client.message channel: channel, text: "will delete #{length} files"
+    file_ids = files.map { |f| f['id'] }
+    delete_files(file_ids)
+  end
+
+end
 
 def direct_message?(data)
   # direct message channles start with a 'D'
@@ -142,25 +210,6 @@ def help
       `bot attachment` to see a Slack attachment message.\n
       `@<your bot\'s name>` to demonstrate detecting a mention.\n
       `bot help` to see this again.)
-end
-
-def post_message_payload(data)
-  main_msg = 'Beep Beep Boop is a ridiculously simple hosting platform for your Slackbots.'
-  {
-    channel: data['channel'],
-      as_user: true,
-      attachments: [
-        {
-          fallback: main_msg,
-          pretext: 'We bring bots to life. :sunglasses: :thumbsup:',
-          title: 'Host, deploy and share your bot in seconds.',
-          image_url: 'https://storage.googleapis.com/beepboophq/_assets/bot-1.22f6fb.png',
-          title_link: 'https://beepboophq.com/',
-          text: main_msg,
-          color: '#7CD197'
-        }
-      ]
-  }
 end
 
 client.start!
