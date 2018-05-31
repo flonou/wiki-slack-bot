@@ -133,51 +133,54 @@ client.on :message do |data|
 	    		end
   		end
 	  	if data['text'] != nil then
-    		values = data['text'].split(" ",2)
-    		if values.size >= 2 then
-      			
-				   case values[0]
-      				
-				     when 'wiki', '/wiki' then
-        		  logger.debug("Should search for : #{values[1]}")
-        		  wiki.search webclient, client, data['channel'], values[1]    
+                  logger.debug("text : #{data['text']}")
+    		  values = data['text'].split(" ",2)
+    		  if values.size >= 2 then
+      		
+                    case values[0]
+      		
+                    when 'wiki', '/wiki' then
+        	      logger.debug("Should search for : #{values[1]}")
+        	      wiki.search webclient, client, data['channel'], values[1]    
           
-          end
-        end
-        values = data['text'].split(" ",10) 
-        case values[0] 
-          when 'clear' then
-            if (values.size != 3) then
-              client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token. Please use the command 'clear TOKEN NBDAYS' to remove all files that you shared and that are older than NBDAYS"
-              client.message channel: data['channel'], text: "You can get your token at : https://api.slack.com/custom-integrations/legacy-tokens."
-            else
-              clear_files(client, data['channel'], values[1], values[2])  
-            end
+                    end
+                  end
+                  values = data['text'].split(" ") 
+                  case values[0] 
+                  
+                  when 'clear' then
+                    logger.debug("got clear")
+                    if (values.size != 3)
+                      client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token. Please use the command 'clear TOKEN NBDAYS' to remove all files that you shared and that are older than NBDAYS"
+                      client.message channel: data['channel'], text: "You can get your token at : https://api.slack.com/custom-integrations/legacy-tokens."
+                    else
+	              logger.debug("Ok I will check the files I can delete, older than #{values[2]} days")
+                      clear_files(client, data['channel'], values[1], values[2])
+
+                    end
+
   		  end
-      end
+                end
     end
 end
 
-def list_files(token, days)
-  ts_to = (Time.now - days * 24 * 60 * 60).to_i
+def list_files(userToken, days)
+  ts_to = (Time.now - days.to_i * 24 * 60 * 60).to_i
   params = {
-    token: token,
+    token: userToken,
     ts_to: ts_to,
     count: 1000
   }
   uri = URI.parse('https://slack.com/api/files.list')
   uri.query = URI.encode_www_form(params)
   response = Net::HTTP.get_response(uri)
-logger = Logging.logger(STDOUT)
-logger.level = :debug
-  logger.debug(response.body)
-  JSON.parse(response.body)['files']
+  return JSON.parse(response.body)['files']
 end
 
-def delete_files(file_ids, token)
+def delete_files(file_ids, userToken)
   file_ids.each do |file_id|
     params = {
-      token: token,
+      token: userToken,
       file: file_id
     }
     uri = URI.parse('https://slack.com/api/files.delete')
@@ -188,7 +191,6 @@ def delete_files(file_ids, token)
 end
 
 def clear_files(client, channel, token, days)
-  client.message channel: channel, text: "I will check the files corresponding to your request"
   files = list_files(token,days)
   if files != nil then
     length = files.length
@@ -197,7 +199,6 @@ def clear_files(client, channel, token, days)
     delete_files(file_ids, token)
     client.message channel: channel, text: "done..."
   end
-
 end
 
 def direct_message?(data)
@@ -217,6 +218,7 @@ end
 def help
   %Q(I will respond to the following messages: \n
       `wiki <search request>` to search for something in the wiki.\n
+      `clear <token> <days>` to remove your files older than the given number of days.\n
       `bot hi` for a simple message.\n
       `bot attachment` to see a Slack attachment message.\n
       `@<your bot\'s name>` to demonstrate detecting a mention.\n
