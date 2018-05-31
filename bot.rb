@@ -35,11 +35,12 @@ client.on :close do |_data|
 #  client.restart!
 #  puts 'Client started again'
   client.stop!
+  client.start!
 end
 
 client.on :closed do |_data|
   puts 'Connection has been closed.'
-  client.start!
+# client.start!
 end
 
 
