@@ -115,9 +115,7 @@ client.on :message do |data|
 		    	client.message channel: data['channel'], text: help
 		    	logger.debug("A call for help")
 
-		when 'bot clear' then
-			client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token"
-			clear_files(client, data['channel'])  
+	
 
 
 	  	when /^bot / then
@@ -134,25 +132,33 @@ client.on :message do |data|
 	    		end
   		end
 	  	if data['text'] != nil then
-    			values = data['text'].split(" ",2)
+    		values = data['text'].split(" ",2)
     			if values.size >= 2 then
       			
-				case values[0]
+				  case values[0]
       				
-				when 'wiki', '/wiki' then
-        				logger.debug("Should search for : #{values[1]}")
-        				wiki.search webclient, client, data['channel'], values[1]
-      				end
+				    when 'wiki', '/wiki' then
+        			logger.debug("Should search for : #{values[1]}")
+        			wiki.search webclient, client, data['channel'], values[1]
+            end
+            
+          when 'clear' then
+            if (values.size != 4) then
+              client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token. Please use the command 'clear TOKEN NBDAYS' to remove all files that you shared and that are older than NBDAYS"
+              client.message channel: data['channel'], text: "You can get your token at : https://api.slack.com/custom-integrations/legacy-tokens."
+            else
+              clear_files(client, data['channel'], values[1], values[2})  
+            end
     			end
   		end
 	end
 end
 
-def list_files
-  nbdays = 30*6;
+def list_files(token, days)
+  nbdays = days;
   ts_to = (Time.now - nbdays * 24 * 60 * 60).to_i
   params = {
-    token: Slack.configure.token,
+    token: token,
     ts_to: ts_to,
     count: 1000
   }
@@ -168,7 +174,7 @@ end
 def delete_files(file_ids)
   file_ids.each do |file_id|
     params = {
-    token: Slack.configure.token,
+    token: token,
       file: file_id
     }
     uri = URI.parse('https://slack.com/api/files.delete')
@@ -178,13 +184,13 @@ def delete_files(file_ids)
   end
 end
 
-def clear_files(client, channel)
-  files = list_files
+def clear_files(client, channel, token, days)
+  files = list_files(token,days)
   if files != nil then
     length = files.length
     client.message channel: channel, text: "will delete #{length} files"
     file_ids = files.map { |f| f['id'] }
-    delete_files(file_ids)
+    delete_files(file_ids, token)
   end
 
 end
