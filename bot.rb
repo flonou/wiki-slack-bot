@@ -1,9 +1,11 @@
 require 'slack-ruby-client'
 require 'logging'
-#require 'uri'
-#require 'net/http'
-#require 'json'
+require 'uri'
+require 'net/http'
+require 'json'
+require 'sinatra/base'
 require_relative 'commands/wiki'
+require_relative 'commands/glpi'
 
 logger = Logging.logger(STDOUT)
 logger.level = :debug
@@ -20,9 +22,15 @@ Slack.configure do |config|
   end
 end
 
+Slack::RealTime.configure do |config|
+  config.concurrency = Slack::RealTime::Concurrency::Eventmachine
+end
+
 webclient = Slack::Web::Client.new
 client = Slack::RealTime::Client.new
 wiki = Commands::Wiki.new
+glpi = Commands::Glpi.new
+
 
 # listen for hello (connection) event - https://api.slack.com/events/hello
 client.on :hello do
@@ -30,16 +38,17 @@ client.on :hello do
 end
 
 client.on :close do |_data|
-  puts 'Connection closing, exiting.'
+  puts _data
+  puts 'Slack Connection closing, exiting.'
 #  client = Slack::RealTime::Client.new
 #  client.restart!
 #  puts 'Client started again'
   client.stop!
-  client.start!
+#  client.start!
 end
 
 client.on :closed do |_data|
-  puts 'Connection has been closed.'
+  puts 'Slack Connection has been closed.'
 # client.start!
 end
 
@@ -76,7 +85,6 @@ users.each do |entry|
     end
     end
 end
-
 
 
 # listen for message event - https://api.slack.com/events/message
@@ -142,6 +150,12 @@ client.on :message do |data|
                     when 'wiki', '/wiki' then
         	      logger.debug("Should search for : #{values[1]}")
         	      wiki.search webclient, client, data['channel'], values[1]    
+          
+                    
+                    when 'resa', '/resa' then
+        	      logger.debug("Should search for : #{values[1]}")
+        	      glpi.search webclient, client, data['channel'], values[1]    
+#        	      Commands::Glpi.search webclient, client, data['channel'], values[1]    
           
                     end
                   end
@@ -218,11 +232,122 @@ end
 def help
   %Q(I will respond to the following messages: \n
       `wiki <search request>` to search for something in the wiki.\n
-      `clear <token> <days>` to remove your files older than the given number of days.\n
+      `clear <token> <days>` to remove your files older than the given number of days. Token can be created/found at : \n 
+	 > https://api.slack.com/custom-integrations/legacy-tokens\n
       `bot hi` for a simple message.\n
       `bot attachment` to see a Slack attachment message.\n
       `@<your bot\'s name>` to demonstrate detecting a mention.\n
       `bot help` to see this again.)
 end
 
-client.start!
+
+
+
+begin
+
+#slack_thread = Thread.new do
+threads = []
+#client.start_async
+#while true do
+#sleep 0.12
+#end
+#logger.debug("Stopping Slack client")
+#end
+
+plim = "yeah"
+
+#class SlackSinatra < Sinatra::Application
+class SlackSinatra < Sinatra::Base
+
+ set :logging, true
+ set :bind, '0.0.0.0'
+ set :port, 10000
+ set :environment, :production
+ set :sessions, true
+ puts "Sinatra running in thread: #{Thread.current}"  
+#puts @testval
+
+class << self
+      attr_accessor :sinatra_thread
+      attr_accessor :glpi
+      attr_accessor :webclient
+      attr_accessor :client
+end
+
+  post "/slack/:command" do
+    payload = JSON.parse(request.params['payload'])
+#    puts payload
+    channel = payload['channel']['id']
+#    puts channel
+    message = payload['container']['message_ts']
+#    puts message
+    action_id = payload['actions'][0]['action_id']
+    values = payload['actions'][0]['value'].split("\n")
+    case action_id
+    when "showDetails"
+      previousQuery = values[0]
+#      puts previousQuery
+      itemType = values[1]
+#      puts itemType
+      itemId = values[2]
+#      puts itemId
+      SlackSinatra.glpi.showDetail(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,itemType,itemId,message)
+    when "searchUpdate"
+      previousQuery = values[0]
+      SlackSinatra.glpi.search(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,message)
+    end
+  end
+  get "/slack/:command" do
+    logger.debug("Command is #{params[:command]}")
+  end
+#run!
+end
+
+logger.debug("Will run Sinatra")
+
+
+sinatra_thread = Thread.new(plim) do
+begin
+SlackSinatra.glpi = glpi
+SlackSinatra.webclient = webclient
+SlackSinatra.client = client
+SlackSinatra.glpi.connect
+SlackSinatra.run!
+ rescue StandardError => e
+    $stderr << e.message
+    $stderr << e.backtrace.join("\n")
+  end
+end
+
+threads << sinatra_thread
+logger.debug("Will run Slack client")
+threads << client.start_async
+
+#run SlackSinatra.run!
+
+
+#Thread.new do
+#  begin
+#    while true do
+#      sleep 0.12
+#    end
+
+#  rescue Exception => e
+#    logger.error(e)
+#    logger.error(e.backtrace)
+#    raise e
+#  end
+#end
+#sinatra_thread = Thread.new do
+#Commands::Glpi.run!
+#while true do
+#sleep 0.12
+#end
+#end
+  rescue Exception => e
+    logger.error(e)
+    logger.error(e.backtrace)
+    raise e
+  end
+
+threads.each(&:join)

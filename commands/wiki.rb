@@ -4,37 +4,48 @@ require 'logging'
     class Wiki
       @@logger = Logging.logger(STDOUT)
       @@logger.level = :debug
-      for i in 0 ... ARGV.length
-        if(ARGV[i] == "-url" && i+1<ARGV.length)
-	        @@url = ARGV[i+1]
-	      end
-	      if(ARGV[i] == "-username" && i+1<ARGV.length)
-	        @@username = ARGV[i+1]
-	      end
-	      if(ARGV[i] == "-password" && i+1<ARGV.length)
-	        @@password = ARGV[i+1]
-	      end
+
+      def initialize
+        for i in 0 ... ARGV.length
+          if(ARGV[i] == "-wikiurl" && i+1<ARGV.length)
+            @@url = ARGV[i+1]
+          end
+          if(ARGV[i] == "-wikiusername" && i+1<ARGV.length)
+            @@username = ARGV[i+1]
+          end
+          if(ARGV[i] == "-wikipassword" && i+1<ARGV.length)
+            @@password = ARGV[i+1]
+          end
+        end
+        if not @@url
+          logger.fatal('Missing Wiki api url. use -wikiurl option.')
+	  exit
+        end
+        if not @@username
+          logger.fatal('Missing Wiki username. use -wikiusername option.')
+	  exit
+        end
+        if not @@password
+          logger.fatal('Missing Wiki account password. use -wikipassword option.')
+	  exit
+        end
+        connect()
       end
-      if not @@url
-        logger.fatal('Missing Wiki api url. use -url option.')
-	      exit
+     
+      def connect
+        @@wiki_connection = MediawikiApi::Client.new @@url
+        @@logger.debug("I will try to connect to the wiki as #{@@username}!")
+
+        @@wiki_connection.log_in @@username, @@password
+        if @@wiki_connection.logged_in then
+          @@logger.debug("Connected successfuly")
+        else
+          @@logger.debug("Could not connect :(")
+        end
       end
-      if not @@username
-        logger.fatal('Missing Wiki username. use -username option.')
-	      exit
-      end
-      if not @@password
-        logger.fatal('Missing Wiki account password. use -password option.')
-	      exit
-      end
-      @@wiki_connection = MediawikiApi::Client.new @@url
-      @@logger.debug("I will try to connect to the wiki as #{@@username}!")
-      @@wiki_connection.log_in @@username, @@password
-      if @@wiki_connection.logged_in then
-        @@logger.debug("Connected successfuly")
-      else
-        @@logger.debug("Could not connect :(")
-      end
+
+
+      
 =begin
       wiki_connection = MediawikiApi::Client.new "https://wiki.inria.fr/wikis/hybrid/api.php"
       wiki_connection.log_in "username", "password"
@@ -44,6 +55,8 @@ require 'logging'
         client.say(channel: data.channel, text: "Your wiki is created http://MediaWiki-URL?curid=#{pageid}")
       end
 =end
+
+
 
 	def boldQuery(text,query)
 		text.gsub(/(#{query})/i, "*\\1*")
@@ -109,7 +122,13 @@ require 'logging'
 
       def search (webclient, client, channel, searchQuery)
         #@@logger.debug("Searching for #{searchQuery}")
-        response = @@wiki_connection.action :query, list: "search", srwhat: "text", srprop: "snippet|sectiontitle", srsearch: searchQuery
+        begin
+          response = @@wiki_connection.action :query, list: "search", srwhat: "text", srprop: "snippet|sectiontitle", srsearch: searchQuery
+	# if session was ended, we reconnect and requery
+        rescue => e
+          connect()
+          response = @@wiki_connection.action :query, list: "search", srwhat: "text", srprop: "snippet|sectiontitle", srsearch: searchQuery
+        end
 #        testResponse = @@wiki_connection.action :query, format: "xml", prop:"extracts", generator:"search", exsentences:"3", exlimite:"5", exintro:"1", explaintext:"1", gsrwhat:"text", gsrsearch: searchQuery
 #        @@logger.debug("res is #{response.data}")
         @@logger.debug("res is #{response.data['search']}")
