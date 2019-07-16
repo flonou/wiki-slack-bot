@@ -120,19 +120,19 @@ client.on :message do |data|
 
     end
     
-     if rebecca_id == data['user'] then
-       possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
-       randValue = rand(possible_texts.size)*5
-       if (randValue < possible_texts.size) then
-         client.typing channel: data['channel']
-         client.message channel: data['channel'], text: possible_texts[randValue]
+    if rebecca_id == data['user'] then
+      possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
+      randValue = rand(possible_texts.size)*5
+      if (randValue < possible_texts.size) then
+        client.typing channel: data['channel']
+        client.message channel: data['channel'], text: possible_texts[randValue]
       end
-     end
+    end
 
     if data['text'] != nil then
       logger.debug("text : #{data['text']}")
-       values = data['text'].split(" ",2)
-       if values.size >= 2 then
+      values = data['text'].split(" ",2)
+      if values.size >= 2 then
         case values[0]
           
         when 'wiki', '/wiki' then
@@ -156,7 +156,7 @@ client.on :message do |data|
           client.message channel: data['channel'], text: "You can get your token at : https://api.slack.com/custom-integrations/legacy-tokens."
         else
           logger.debug("Ok I will check the files I can delete, older than #{values[2]} days")
-           clear_files(client, data['channel'], values[1], values[2])
+          clear_files(client, data['channel'], values[1], values[2])
         end
        end
     end
