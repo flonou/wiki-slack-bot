@@ -83,65 +83,65 @@ end
 
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
-	if data['text']
+  if data['text']
     case data['text'].downcase
 
     when 'hi', 'bot hi' then
-			client.typing channel: data['channel']
-			client.message channel: data['channel'], text: "Hello <@#{data['user']}>."
-			logger.debug("<@#{data['user']}> said hi")
+      client.typing channel: data['channel']
+      client.message channel: data['channel'], text: "Hello <@#{data['user']}>."
+      logger.debug("<@#{data['user']}> said hi")
 
-			if direct_message?(data)
-     		client.message channel: data['channel'], text: "It\'s nice to talk to you directly."
-     		logger.debug("And it was a direct message")
-    	end
+      if direct_message?(data)
+         client.message channel: data['channel'], text: "It\'s nice to talk to you directly."
+         logger.debug("And it was a direct message")
+      end
 
-		when 'attachment', 'bot attachment' then
-    	# attachment messages require using web_client
-    	client.web_client.chat_postMessage(post_message_payload(data))
-    	logger.debug("Attachment message posted")
+    when 'attachment', 'bot attachment' then
+      # attachment messages require using web_client
+      client.web_client.chat_postMessage(post_message_payload(data))
+      logger.debug("Attachment message posted")
 
-		when bot_mentioned(client)
-			client.message channel: data['channel'], text: 'You really do care about me. :heart:'
-			logger.debug("Bot mentioned in channel #{data['channel']}")
+    when bot_mentioned(client)
+      client.message channel: data['channel'], text: 'You really do care about me. :heart:'
+      logger.debug("Bot mentioned in channel #{data['channel']}")
 
-		when 'bot close' then
-    	logger.debug("Closing connection")
+    when 'bot close' then
+      logger.debug("Closing connection")
       client.on( :close)
       client.on( :closed)
 
-		when 'bot help', 'help', 'bot' then
-     	client.message channel: data['channel'], text: help
-	   	logger.debug("A call for help")
+    when 'bot help', 'help', 'bot' then
+       client.message channel: data['channel'], text: help
+       logger.debug("A call for help")
 
     when /^bot / then
- 			client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
- 			logger.debug("Unknown command")
+       client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
+       logger.debug("Unknown command")
 
     end
-		
- 		if rebecca_id == data['user'] then
- 			possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
-   		randValue = rand(possible_texts.size)*5
- 			if (randValue < possible_texts.size) then
- 				client.typing channel: data['channel']
- 				client.message channel: data['channel'], text: possible_texts[randValue]
-  		end
- 		end
+    
+     if rebecca_id == data['user'] then
+       possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
+       randValue = rand(possible_texts.size)*5
+       if (randValue < possible_texts.size) then
+         client.typing channel: data['channel']
+         client.message channel: data['channel'], text: possible_texts[randValue]
+      end
+     end
 
     if data['text'] != nil then
       logger.debug("text : #{data['text']}")
- 		  values = data['text'].split(" ",2)
- 		  if values.size >= 2 then
+       values = data['text'].split(" ",2)
+       if values.size >= 2 then
         case values[0]
-      		
+          
         when 'wiki', '/wiki' then
-  	      logger.debug("Should search for : #{values[1]}")
-   	      wiki.search webclient, client, data['channel'], values[1]    
+          logger.debug("Should search for : #{values[1]}")
+           wiki.search webclient, client, data['channel'], values[1]    
           
         when 'resa', '/resa' then
-   	      logger.debug("Should search for : #{values[1]}")
-   	      glpi.search webclient, client, data['channel'], values[1]    
+           logger.debug("Should search for : #{values[1]}")
+           glpi.search webclient, client, data['channel'], values[1]    
         
         end
       end
@@ -155,10 +155,10 @@ client.on :message do |data|
           client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token. Please use the command 'clear TOKEN NBDAYS' to remove all files that you shared and that are older than NBDAYS"
           client.message channel: data['channel'], text: "You can get your token at : https://api.slack.com/custom-integrations/legacy-tokens."
         else
-	        logger.debug("Ok I will check the files I can delete, older than #{values[2]} days")
+          logger.debug("Ok I will check the files I can delete, older than #{values[2]} days")
            clear_files(client, data['channel'], values[1], values[2])
         end
- 		  end
+       end
     end
   end
 end
@@ -219,7 +219,7 @@ def help
       `wiki <search request>` to search for something in the wiki.\n
       `resa <search request>` to search for an item in glpi.\n
       `clear <token> <days>` to remove your files older than the given number of days. Token can be created/found at : \n 
-	 > https://api.slack.com/custom-integrations/legacy-tokens\n
+   > https://api.slack.com/custom-integrations/legacy-tokens\n
       `bot hi` for a simple message.\n
       `bot attachment` to see a Slack attachment message.\n
       `@<your bot\'s name>` to demonstrate detecting a mention.\n
