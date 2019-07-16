@@ -84,9 +84,9 @@ end
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
 	if data['text']
-		case data['text'].downcase
+    case data['text'].downcase
 
-		when 'hi', 'bot hi' then
+    when 'hi', 'bot hi' then
 			client.typing channel: data['channel']
 			client.message channel: data['channel'], text: "Hello <@#{data['user']}>."
 			logger.debug("<@#{data['user']}> said hi")
