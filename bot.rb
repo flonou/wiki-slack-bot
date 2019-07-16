@@ -40,18 +40,12 @@ end
 client.on :close do |_data|
   puts _data
   puts 'Slack Connection closing, exiting.'
-#  client = Slack::RealTime::Client.new
-#  client.restart!
-#  puts 'Client started again'
   client.stop!
-#  client.start!
 end
 
 client.on :closed do |_data|
   puts 'Slack Connection has been closed.'
-# client.start!
 end
-
 
 client.on :goodbye do
   logger.debug("'#{client.self['name']}' will be disconnected from '#{client.team['name']}' team at https://#{client.team['domain']}.slack.com. by the server")
@@ -83,13 +77,12 @@ users.each do |entry|
         logger.debug("found rebecca : " + user['id'] + " but ignoring for now !")
       end
     end
-    end
+  end
 end
 
 
 # listen for message event - https://api.slack.com/events/message
 client.on :message do |data|
-
 	if data['text']
 		case data['text'].downcase
 
@@ -99,83 +92,75 @@ client.on :message do |data|
 			logger.debug("<@#{data['user']}> said hi")
 
 			if direct_message?(data)
-		      		client.message channel: data['channel'], text: "It\'s nice to talk to you directly."
-		      		logger.debug("And it was a direct message")
-		    	end
+     		client.message channel: data['channel'], text: "It\'s nice to talk to you directly."
+     		logger.debug("And it was a direct message")
+    	end
 
 		when 'attachment', 'bot attachment' then
-			    	# attachment messages require using web_client
-			    	client.web_client.chat_postMessage(post_message_payload(data))
-			    	logger.debug("Attachment message posted")
+    	# attachment messages require using web_client
+    	client.web_client.chat_postMessage(post_message_payload(data))
+    	logger.debug("Attachment message posted")
 
 		when bot_mentioned(client)
 			client.message channel: data['channel'], text: 'You really do care about me. :heart:'
 			logger.debug("Bot mentioned in channel #{data['channel']}")
 
-
 		when 'bot close' then
-		    	logger.debug("Closing connection")
-	                client.on( :close)
-	                client.on( :closed)
-#            		client.close(nil)
-#			client.callback(nil, :closed)
+    	logger.debug("Closing connection")
+      client.on( :close)
+      client.on( :closed)
 
 		when 'bot help', 'help', 'bot' then
-		    	client.message channel: data['channel'], text: help
-		    	logger.debug("A call for help")
+     	client.message channel: data['channel'], text: help
+	   	logger.debug("A call for help")
 
-	
+    when /^bot / then
+ 			client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
+ 			logger.debug("Unknown command")
 
-
-	  	when /^bot / then
-    			client.message channel: data['channel'], text: "Sorry <@#{data['user']}>, I don\'t understand. \n#{help}"
-    			logger.debug("Unknown command")
-	  	end
-		
-  		if rebecca_id == data['user'] then
-    			possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
-	    		randValue = rand(possible_texts.size)*5
-    			if (randValue < possible_texts.size) then
-      				client.typing channel: data['channel']
-      				client.message channel: data['channel'], text: possible_texts[randValue]
-	    		end
-  		end
-	  	if data['text'] != nil then
-                  logger.debug("text : #{data['text']}")
-    		  values = data['text'].split(" ",2)
-    		  if values.size >= 2 then
-      		
-                    case values[0]
-      		
-                    when 'wiki', '/wiki' then
-        	      logger.debug("Should search for : #{values[1]}")
-        	      wiki.search webclient, client, data['channel'], values[1]    
-          
-                    
-                    when 'resa', '/resa' then
-        	      logger.debug("Should search for : #{values[1]}")
-        	      glpi.search webclient, client, data['channel'], values[1]    
-#        	      Commands::Glpi.search webclient, client, data['channel'], values[1]    
-          
-                    end
-                  end
-                  values = data['text'].split(" ") 
-                  case values[0] 
-                  
-                  when 'clear' then
-                    logger.debug("got clear")
-                    if (values.size != 3)
-                      client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token. Please use the command 'clear TOKEN NBDAYS' to remove all files that you shared and that are older than NBDAYS"
-                      client.message channel: data['channel'], text: "You can get your token at : https://api.slack.com/custom-integrations/legacy-tokens."
-                    else
-	              logger.debug("Ok I will check the files I can delete, older than #{values[2]} days")
-                      clear_files(client, data['channel'], values[1], values[2])
-
-                    end
-
-  		  end
-                end
     end
+		
+ 		if rebecca_id == data['user'] then
+ 			possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
+   		randValue = rand(possible_texts.size)*5
+ 			if (randValue < possible_texts.size) then
+ 				client.typing channel: data['channel']
+ 				client.message channel: data['channel'], text: possible_texts[randValue]
+  		end
+ 		end
+
+    if data['text'] != nil then
+      logger.debug("text : #{data['text']}")
+ 		  values = data['text'].split(" ",2)
+ 		  if values.size >= 2 then
+        case values[0]
+      		
+        when 'wiki', '/wiki' then
+  	      logger.debug("Should search for : #{values[1]}")
+   	      wiki.search webclient, client, data['channel'], values[1]    
+          
+        when 'resa', '/resa' then
+   	      logger.debug("Should search for : #{values[1]}")
+   	      glpi.search webclient, client, data['channel'], values[1]    
+        
+        end
+      end
+      
+      values = data['text'].split(" ") 
+      case values[0] 
+                  
+      when 'clear' then
+        logger.debug("got clear")
+        if (values.size != 3)
+          client.message channel: data['channel'], text: "For this to work, the bot needs to have user token instead of bot token. Please use the command 'clear TOKEN NBDAYS' to remove all files that you shared and that are older than NBDAYS"
+          client.message channel: data['channel'], text: "You can get your token at : https://api.slack.com/custom-integrations/legacy-tokens."
+        else
+	        logger.debug("Ok I will check the files I can delete, older than #{values[2]} days")
+           clear_files(client, data['channel'], values[1], values[2])
+        end
+ 		  end
+    end
+  end
 end
 
 def list_files(userToken, days)
@@ -226,12 +211,13 @@ def bot_mentioned(client)
 end
 
 def joiner_is_bot?(client, data)
- /^\<\@#{client.self['id']}\>/.match data['channel']['latest']['text']
+  /^\<\@#{client.self['id']}\>/.match data['channel']['latest']['text']
 end
 
 def help
   %Q(I will respond to the following messages: \n
       `wiki <search request>` to search for something in the wiki.\n
+      `resa <search request>` to search for an item in glpi.\n
       `clear <token> <days>` to remove your files older than the given number of days. Token can be created/found at : \n 
 	 > https://api.slack.com/custom-integrations/legacy-tokens\n
       `bot hi` for a simple message.\n
@@ -241,113 +227,81 @@ def help
 end
 
 
-
-
 begin
 
-#slack_thread = Thread.new do
-threads = []
-#client.start_async
-#while true do
-#sleep 0.12
-#end
-#logger.debug("Stopping Slack client")
-#end
+  threads = []
 
-plim = "yeah"
+  class SlackSinatra < Sinatra::Base
 
-#class SlackSinatra < Sinatra::Application
-class SlackSinatra < Sinatra::Base
-
- set :logging, true
- set :bind, '0.0.0.0'
- set :port, 10000
- set :environment, :production
- set :sessions, true
- puts "Sinatra running in thread: #{Thread.current}"  
-#puts @testval
-
-class << self
+    set :logging, true
+    set :bind, '0.0.0.0'
+    set :port, 10000
+    set :environment, :production
+    set :sessions, true
+    puts "Sinatra running in thread: #{Thread.current}"  
+  
+    class << self
       attr_accessor :sinatra_thread
       attr_accessor :glpi
       attr_accessor :webclient
       attr_accessor :client
-end
+    end
 
-  post "/slack/:command" do
-    payload = JSON.parse(request.params['payload'])
+    post "/slack/:command" do
+      payload = JSON.parse(request.params['payload'])
 #    puts payload
-    channel = payload['channel']['id']
+      channel = payload['channel']['id']
 #    puts channel
-    message = payload['container']['message_ts']
+      message = payload['container']['message_ts']
 #    puts message
-    action_id = payload['actions'][0]['action_id']
-    values = payload['actions'][0]['value'].split("\n")
-    case action_id
-    when "showDetails"
-      previousQuery = values[0]
+      action_id = payload['actions'][0]['action_id']
+      values = payload['actions'][0]['value'].split("\n")
+      case action_id
+      
+      when "showDetails"
+        previousQuery = values[0]
 #      puts previousQuery
-      itemType = values[1]
+        itemType = values[1]
 #      puts itemType
-      itemId = values[2]
+        itemId = values[2]
 #      puts itemId
-      SlackSinatra.glpi.showDetail(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,itemType,itemId,message)
-    when "searchUpdate"
-      previousQuery = values[0]
-      SlackSinatra.glpi.search(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,message)
+        SlackSinatra.glpi.showDetail(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,itemType,itemId,message)
+      
+      when "searchUpdate"
+        previousQuery = values[0]
+        SlackSinatra.glpi.search(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,message)
+      end
+    end
+  
+    get "/slack/:command" do
+      logger.debug("Command is #{params[:command]}")
+    end
+
+  end
+
+  logger.debug("Will run Sinatra")
+  
+  sinatra_thread = Thread.new() do
+    begin
+      SlackSinatra.glpi = glpi
+      SlackSinatra.webclient = webclient
+      SlackSinatra.client = client
+      SlackSinatra.glpi.connect
+      SlackSinatra.run!
+    rescue StandardError => e
+      $stderr << e.message
+      $stderr << e.backtrace.join("\n")
     end
   end
-  get "/slack/:command" do
-    logger.debug("Command is #{params[:command]}")
-  end
-#run!
+
+  threads << sinatra_thread
+  logger.debug("Will run Slack client")
+  threads << client.start_async
+
+rescue Exception => e
+  logger.error(e)
+  logger.error(e.backtrace)
+  raise e
 end
-
-logger.debug("Will run Sinatra")
-
-
-sinatra_thread = Thread.new(plim) do
-begin
-SlackSinatra.glpi = glpi
-SlackSinatra.webclient = webclient
-SlackSinatra.client = client
-SlackSinatra.glpi.connect
-SlackSinatra.run!
- rescue StandardError => e
-    $stderr << e.message
-    $stderr << e.backtrace.join("\n")
-  end
-end
-
-threads << sinatra_thread
-logger.debug("Will run Slack client")
-threads << client.start_async
-
-#run SlackSinatra.run!
-
-
-#Thread.new do
-#  begin
-#    while true do
-#      sleep 0.12
-#    end
-
-#  rescue Exception => e
-#    logger.error(e)
-#    logger.error(e.backtrace)
-#    raise e
-#  end
-#end
-#sinatra_thread = Thread.new do
-#Commands::Glpi.run!
-#while true do
-#sleep 0.12
-#end
-#end
-  rescue Exception => e
-    logger.error(e)
-    logger.error(e.backtrace)
-    raise e
-  end
 
 threads.each(&:join)
