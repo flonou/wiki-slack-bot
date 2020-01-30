@@ -163,7 +163,7 @@ client.on :message do |data|
 
        when 'miaou' then
           logger.debug("Lets write some nyan-facts")
-          nya.randomFact webclient
+          nya.randomFact webclient, data['channel']
       end
     end
   end
