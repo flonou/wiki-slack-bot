@@ -3,7 +3,7 @@
 module Commands
   class NyaBot
     def initialize
-      facts = File.read(File.dirname(__FILE__) + "../resources/nyaFacts.txt").split
+      facts = File.read(File.dirname(__FILE__) + "/../resources/nyaFacts.txt").split
     end
     def randomFact(webclient)
       fact = rand(0..facts.size-1)
