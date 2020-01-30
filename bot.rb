@@ -6,6 +6,7 @@ require 'json'
 require 'sinatra/base'
 require_relative 'commands/wiki'
 require_relative 'commands/glpi'
+require_relative 'commands/nya'
 
 logger = Logging.logger(STDOUT)
 logger.level = :debug
