@@ -6,6 +6,7 @@ require 'json'
 require 'sinatra/base'
 require_relative 'commands/wiki'
 require_relative 'commands/glpi'
+require_relative 'commands/nya'
 
 logger = Logging.logger(STDOUT)
 logger.level = :debug
@@ -30,6 +31,7 @@ webclient = Slack::Web::Client.new
 client = Slack::RealTime::Client.new
 wiki = Commands::Wiki.new
 glpi = Commands::Glpi.new
+nya = Commands::NyaBot.new
 
 
 # listen for hello (connection) event - https://api.slack.com/events/hello
@@ -119,7 +121,7 @@ client.on :message do |data|
        logger.debug("Unknown command")
 
     end
-    
+
     if rebecca_id == data['user'] then
       possible_texts = ["va bosser <@#{data['user']}>.","<@#{data['user']}>, t'as pas un truc à faire là? genre une thèse ?","Je trouve que tu parles beaucoup pour une thésarde <@#{data['user']}>..."]
       randValue = rand(possible_texts.size)*5
@@ -134,21 +136,21 @@ client.on :message do |data|
       values = data['text'].split(" ",2)
       if values.size >= 2 then
         case values[0]
-          
+
         when 'wiki', '/wiki' then
           logger.debug("Should search for : #{values[1]}")
-           wiki.search webclient, client, data['channel'], values[1]    
-          
+           wiki.search webclient, client, data['channel'], values[1]
+
         when 'resa', '/resa' then
            logger.debug("Should search for : #{values[1]}")
-           glpi.search webclient, client, data['channel'], values[1]    
-        
+           glpi.search webclient, client, data['channel'], values[1]
+
         end
       end
-      
-      values = data['text'].split(" ") 
-      case values[0] 
-                  
+
+      values = data['text'].split(" ")
+      case values[0]
+
       when 'clear' then
         logger.debug("got clear")
         if (values.size != 3)
@@ -158,7 +160,11 @@ client.on :message do |data|
           logger.debug("Ok I will check the files I can delete, older than #{values[2]} days")
           clear_files(client, data['channel'], values[1], values[2])
         end
-       end
+
+       when 'miaou' then
+          logger.debug("Lets write some nyan-facts")
+          nya.randomFact webclient, data['channel']
+      end
     end
   end
 end
@@ -218,7 +224,7 @@ def help
   %Q(I will respond to the following messages: \n
       `wiki <search request>` to search for something in the wiki.\n
       `resa <search request>` to search for an item in glpi.\n
-      `clear <token> <days>` to remove your files older than the given number of days. Token can be created/found at : \n 
+      `clear <token> <days>` to remove your files older than the given number of days. Token can be created/found at : \n
    > https://api.slack.com/custom-integrations/legacy-tokens\n
       `bot hi` for a simple message.\n
       `bot attachment` to see a Slack attachment message.\n
@@ -238,8 +244,8 @@ begin
     set :port, 10000
     set :environment, :production
     set :sessions, true
-    puts "Sinatra running in thread: #{Thread.current}"  
-  
+    puts "Sinatra running in thread: #{Thread.current}"
+
     class << self
       attr_accessor :sinatra_thread
       attr_accessor :glpi
@@ -257,7 +263,7 @@ begin
       action_id = payload['actions'][0]['action_id']
       values = payload['actions'][0]['value'].split("\n")
       case action_id
-      
+
       when "showDetails"
         previousQuery = values[0]
 #      puts previousQuery
@@ -266,13 +272,13 @@ begin
         itemId = values[2]
 #      puts itemId
         SlackSinatra.glpi.showDetail(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,itemType,itemId,message)
-      
+
       when "searchUpdate"
         previousQuery = values[0]
         SlackSinatra.glpi.search(SlackSinatra.webclient,SlackSinatra.client,channel,previousQuery,message)
       end
     end
-  
+
     get "/slack/:command" do
       logger.debug("Command is #{params[:command]}")
     end
@@ -280,7 +286,7 @@ begin
   end
 
   logger.debug("Will run Sinatra")
-  
+
   sinatra_thread = Thread.new() do
     begin
       SlackSinatra.glpi = glpi
