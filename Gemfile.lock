@@ -1,3 +1,15 @@
+GIT
+  remote: git://github.com/sinatra/sinatra.git
+  revision: 91477e6dad7c9d8eb1c358e47b9d83b73d626f84
+  specs:
+    rack-protection (2.1.0)
+      rack
+    sinatra (2.1.0)
+      mustermann (~> 1.0)
+      rack (~> 2.2)
+      rack-protection (= 2.1.0)
+      tilt (~> 2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -14,7 +26,9 @@ GEM
     faye-websocket (0.10.2)
       eventmachine (>= 0.12.0)
       websocket-driver (>= 0.5.1)
+    ffi (1.13.0-x64-mingw32)
     gli (2.13.4)
+    http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httparty (0.13.7)
@@ -29,22 +43,42 @@ GEM
       faraday (~> 0.9, >= 0.9.0)
       faraday-cookie_jar (~> 0.0, >= 0.0.6)
       faraday_middleware (~> 0.10, >= 0.10.0)
+    mime-types (3.3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2020.0512)
     multi_json (1.11.2)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
+    netrc (0.11.0)
+    rack (2.2.2)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    rest-client (2.1.0-x64-mingw32)
+      ffi (~> 1.9)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
+    ruby2_keywords (0.0.2)
     slack-ruby-client (0.5.1)
       faraday
       faraday_middleware
       gli
       json
       websocket-driver
+    tilt (2.0.10)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.2)
     unf_ext (0.0.7.2-x64-mingw32)
     websocket-driver (0.6.3)
       websocket-extensions (>= 0.1.0)
-    websocket-extensions (0.1.2)
+    websocket-extensions (0.1.5)
 
 PLATFORMS
   ruby
@@ -56,6 +90,8 @@ DEPENDENCIES
   httparty
   logging
   mediawiki_api
+  rest-client
+  sinatra!
   slack-ruby-client
 
 BUNDLED WITH
