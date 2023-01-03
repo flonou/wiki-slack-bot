@@ -1,13 +1,13 @@
 GIT
-  remote: git://github.com/sinatra/sinatra.git
-  revision: 91477e6dad7c9d8eb1c358e47b9d83b73d626f84
+  remote: https://github.com/sinatra/sinatra.git
+  revision: 9b6ba81089244826395577113ac7bac622fdc327
   specs:
-    rack-protection (2.1.0)
+    rack-protection (3.0.5)
       rack
-    sinatra (2.1.0)
-      mustermann (~> 1.0)
-      rack (~> 2.2)
-      rack-protection (= 2.1.0)
+    sinatra (3.0.5)
+      mustermann (~> 3.0)
+      rack (~> 2.2, >= 2.2.4)
+      rack-protection (= 3.0.5)
       tilt (~> 2.0)
 
 GEM
@@ -31,10 +31,10 @@ GEM
     http-accept (1.7.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    httparty (0.13.7)
-      json (~> 1.8)
+    httparty (0.21.0)
+      mini_mime (>= 1.0.0)
       multi_xml (>= 0.5.2)
-    json (1.8.3)
+    json (2.6.3)
     little-plugger (1.1.4)
     logging (2.0.0)
       little-plugger (~> 1.1)
@@ -46,13 +46,14 @@ GEM
     mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2020.0512)
+    mini_mime (1.1.2)
     multi_json (1.11.2)
-    multi_xml (0.5.5)
+    multi_xml (0.6.0)
     multipart-post (2.0.0)
-    mustermann (1.1.1)
+    mustermann (3.0.0)
       ruby2_keywords (~> 0.0.1)
     netrc (0.11.0)
-    rack (2.2.3)
+    rack (2.2.5)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -64,14 +65,14 @@ GEM
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
-    ruby2_keywords (0.0.2)
+    ruby2_keywords (0.0.5)
     slack-ruby-client (0.5.1)
       faraday
       faraday_middleware
       gli
       json
       websocket-driver
-    tilt (2.0.10)
+    tilt (2.0.11)
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.2)
